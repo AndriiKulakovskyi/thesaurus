@@ -53,7 +53,7 @@ const VariableSelectionSummary = ({
       <Separator />
       <CardContent className="pt-4">
         {totalSelectedVariables === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-6 sm:py-8 text-gray-500">
             <p>No variables selected yet.</p>
             <p className="text-sm mt-2">
               Select variables from the questionnaires to see them here.
@@ -61,8 +61,8 @@ const VariableSelectionSummary = ({
           </div>
         ) : (
           <>
-            <ScrollArea className="h-[300px] pr-4">
-              <div className="space-y-6">
+            <ScrollArea className="h-[250px] sm:h-[300px] pr-4">
+              <div className="space-y-4 sm:space-y-6">
                 {nonEmptySelections.map((selection, index) => (
                   <div key={index} className="space-y-2">
                     <div className="flex justify-between items-center">

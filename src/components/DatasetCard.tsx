@@ -41,7 +41,7 @@ const DatasetCard = ({
 
   return (
     <Card
-      className="w-full max-w-[350px] h-[250px] flex flex-col transition-all duration-200 hover:shadow-md cursor-pointer bg-white"
+      className="w-full h-full min-h-[250px] flex flex-col transition-all duration-200 hover:shadow-md cursor-pointer bg-white"
       onClick={handleClick}
     >
       <CardHeader className="pb-2">

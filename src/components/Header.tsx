@@ -11,14 +11,14 @@ const Header = ({
   subtitle = "For Psychiatric Research",
 }: HeaderProps) => {
   return (
-    <header className="w-full bg-white border-b border-gray-200 shadow-sm py-4 px-6">
+    <header className="w-full bg-white border-b border-gray-200 shadow-sm py-3 sm:py-4 px-4 sm:px-6 sticky top-0 z-10">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{title}</h1>
         <div className="flex items-center mt-1">
           <p className="text-sm text-gray-500">{subtitle}</p>
         </div>
       </div>
-      <Separator className="mt-4" />
+      <Separator className="mt-3 sm:mt-4" />
     </header>
   );
 };

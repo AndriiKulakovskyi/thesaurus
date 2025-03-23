@@ -146,8 +146,8 @@ const QuestionnaireVariables = ({
       </CardHeader>
       <Separator />
       <CardContent className="pt-4">
-        <ScrollArea className="h-[400px] pr-4">
-          <div className="space-y-4">
+        <ScrollArea className="h-[300px] sm:h-[400px] pr-4">
+          <div className="space-y-3 sm:space-y-4">
             {flattenedFields.map((field, index) => (
               <div
                 key={index}
@@ -165,6 +165,7 @@ const QuestionnaireVariables = ({
                       !!checked,
                     )
                   }
+                  className="h-4 w-4 sm:h-5 sm:w-5"
                 />
                 <div className="space-y-1 flex-1">
                   <Label

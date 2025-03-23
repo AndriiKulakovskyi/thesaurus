@@ -103,21 +103,21 @@ const DatasetGrid = () => {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-4 bg-gray-50">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">
+    <div className="w-full max-w-7xl mx-auto p-3 sm:p-4 bg-gray-50">
+      <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">
         Available Clinical Datasets
       </h2>
 
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="w-full max-w-[350px] h-[250px]">
+            <div key={i} className="w-full h-[250px]">
               <Skeleton className="h-full w-full rounded-lg" />
             </div>
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
           {datasets.map((dataset) => (
             <DatasetCard
               key={dataset.id}

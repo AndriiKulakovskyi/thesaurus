@@ -15,6 +15,9 @@ import { Skeleton } from "./ui/skeleton";
 import QuestionnaireVariables from "./QuestionnaireVariables";
 import VariableSelectionSummary from "./VariableSelectionSummary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { useToast } from "./ui/use-toast";
+import BreadcrumbNav from "./BreadcrumbNav";
+import FloatingSelectionIndicator from "./FloatingSelectionIndicator";
 
 interface Dataset {
   id: string;
@@ -36,6 +39,7 @@ interface VariableSelection {
 const DatasetDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [dataset, setDataset] = useState<Dataset | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -140,6 +144,13 @@ const DatasetDetail = () => {
     // Only add the selection if there are selected variables
     if (selection.selectedVariables.length > 0) {
       updatedSelections.push(selection);
+
+      // Show toast notification for variable selection
+      toast({
+        title: "Variables Selected",
+        description: `${selection.selectedVariables.length} variables selected from ${selection.formName}`,
+        variant: "success",
+      });
     }
 
     setVariableSelections(updatedSelections);
@@ -153,6 +164,11 @@ const DatasetDetail = () => {
 
   const handleClearSelections = () => {
     setVariableSelections([]);
+    toast({
+      title: "Selections Cleared",
+      description: "All variable selections have been cleared",
+      variant: "default",
+    });
   };
 
   const handleFinalizeSelections = () => {
@@ -174,8 +190,12 @@ const DatasetDetail = () => {
 
     console.log("FINAL SELECTION:", JSON.stringify(output, null, 2));
 
-    // Show an alert to the user
-    alert("Variable selection finalized! Check the console for details.");
+    // Show a toast notification instead of an alert
+    toast({
+      title: "Selection Finalized",
+      description: `${totalSelectedVariables} variables have been extracted successfully`,
+      variant: "success",
+    });
   };
 
   // Get the current selection for the active questionnaire (if any)
@@ -243,25 +263,43 @@ const DatasetDetail = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <Button
-        variant="ghost"
-        onClick={handleBackClick}
-        className="mb-6 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-      >
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Back to Datasets
-      </Button>
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6">
+      {activeTab === "questionnaires" && totalSelectedVariables > 0 && (
+        <FloatingSelectionIndicator
+          count={totalSelectedVariables}
+          onClick={() => setActiveTab("variables")}
+        />
+      )}
+      <div className="sticky top-0 z-10 bg-gray-50 py-2 mb-2 sm:mb-4">
+        <div className="flex flex-col space-y-2">
+          <Button
+            variant="ghost"
+            onClick={handleBackClick}
+            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 self-start"
+            size="sm"
+          >
+            <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="text-sm sm:text-base">Back to Datasets</span>
+          </Button>
+
+          <BreadcrumbNav
+            items={[
+              { label: "Datasets", href: "/" },
+              { label: dataset?.title || "Dataset Details" },
+            ]}
+          />
+        </div>
+      </div>
 
       <div className="max-w-5xl mx-auto bg-white rounded-lg shadow">
-        <div className="p-6">
-          <div className="flex justify-between items-start mb-4">
-            <h1 className="text-2xl font-bold text-gray-800">
+        <div className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 sm:mb-4 gap-2">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
               {dataset.title}
             </h1>
             <Badge
               variant="outline"
-              className="bg-blue-50 text-blue-700 border-blue-200"
+              className="bg-blue-50 text-blue-700 border-blue-200 self-start"
             >
               <Database className="h-3 w-3 mr-1" />
               {dataset.record_count} records
@@ -299,17 +337,20 @@ const DatasetDetail = () => {
             </TabsList>
           </div>
 
-          <TabsContent value="questionnaires" className="p-6 pt-4">
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          <TabsContent
+            value="questionnaires"
+            className="p-3 sm:p-6 pt-3 sm:pt-4"
+          >
+            <div className="mb-4 sm:mb-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2 sm:mb-4">
                 Available Questionnaires
               </h2>
-              <p className="text-gray-600 mb-4">
+              <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4">
                 This dataset contains the following questionnaires that you can
                 explore and extract variables from:
               </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {dataset.questionnaires_models.map((questionnaire) => {
                   // Check if this questionnaire has any selected variables
                   const selection = variableSelections.find(
@@ -377,12 +418,14 @@ const DatasetDetail = () => {
                     </Button>
                   </div>
 
-                  <QuestionnaireVariables
-                    questionnaireId={selectedQuestionnaire}
-                    datasetId={dataset.id}
-                    onSelectionChange={handleVariableSelectionChange}
-                    initialSelections={getCurrentQuestionnaireSelection()}
-                  />
+                  <div className="animate-fadeIn">
+                    <QuestionnaireVariables
+                      questionnaireId={selectedQuestionnaire}
+                      datasetId={dataset.id}
+                      onSelectionChange={handleVariableSelectionChange}
+                      initialSelections={getCurrentQuestionnaireSelection()}
+                    />
+                  </div>
                 </>
               ) : (
                 <VariableSelectionSummary
