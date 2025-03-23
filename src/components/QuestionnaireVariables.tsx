@@ -153,12 +153,12 @@ const QuestionnaireVariables = ({
       </CardHeader>
       <Separator />
       <CardContent className="pt-4">
-        <ScrollArea className="h-[300px] sm:h-[400px] pr-4">
+        <ScrollArea className="h-[400px] sm:h-[600px] pr-4">
           <div className="space-y-3 sm:space-y-4">
             {flattenedFields.map((field, index) => (
               <div
                 key={index}
-                className="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-md"
+                className="flex items-start space-x-3 p-3 hover:bg-blue-50 rounded-lg transition-colors duration-200 mb-2 border border-transparent hover:border-blue-100"
               >
                 <Checkbox
                   id={`${questionnaire.form.nomFormulaire}-${field.variable_name}`}

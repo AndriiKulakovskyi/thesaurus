@@ -14,10 +14,10 @@ const FloatingSelectionIndicator = ({
   if (count === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 animate-fadeIn">
+    <div className="fixed bottom-6 right-6 z-50 animate-fadeIn">
       <Button
         onClick={onClick}
-        className="bg-green-600 hover:bg-green-700 text-white shadow-lg rounded-full px-4 py-2 flex items-center"
+        className="bg-green-600 hover:bg-green-700 text-white shadow-lg rounded-full px-6 py-3 flex items-center transition-all duration-300 hover:shadow-xl"
       >
         <Check className="h-4 w-4 mr-2" />
         <span>{count} Variables Selected</span>

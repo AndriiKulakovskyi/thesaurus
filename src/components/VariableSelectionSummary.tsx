@@ -61,7 +61,7 @@ const VariableSelectionSummary = ({
           </div>
         ) : (
           <>
-            <ScrollArea className="h-[250px] sm:h-[300px] pr-4">
+            <ScrollArea className="h-[350px] sm:h-[500px] pr-4">
               <div className="space-y-4 sm:space-y-6">
                 {nonEmptySelections.map((selection, index) => (
                   <div key={index} className="space-y-2">
@@ -84,11 +84,11 @@ const VariableSelectionSummary = ({
                         </Button>
                       )}
                     </div>
-                    <div className="bg-gray-50 rounded-md p-3 space-y-2">
+                    <div className="bg-gray-50 rounded-lg p-4 space-y-3 border border-gray-100 shadow-sm">
                       {selection.selectedVariables.map((variable, varIndex) => (
                         <div
                           key={varIndex}
-                          className="flex items-center space-x-2 text-sm"
+                          className="flex items-center space-x-2 text-sm p-2 hover:bg-white rounded-md transition-colors duration-200"
                         >
                           <Check className="h-4 w-4 text-green-600" />
                           <div>

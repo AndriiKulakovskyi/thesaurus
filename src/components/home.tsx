@@ -1,6 +1,7 @@
 import React from "react";
 import Header from "./Header";
 import DatasetGrid from "./DatasetGrid";
+import DataSelectionGuide from "./DataSelectionGuide";
 import { Separator } from "./ui/separator";
 
 const Home = () => {
@@ -22,7 +23,14 @@ const Home = () => {
             <Separator className="mt-3 sm:mt-4" />
           </div>
 
-          <DatasetGrid />
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="md:w-1/5">
+              <DataSelectionGuide />
+            </div>
+            <div className="md:w-3/4">
+              <DatasetGrid />
+            </div>
+          </div>
         </div>
       </main>
 

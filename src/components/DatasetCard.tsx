@@ -41,10 +41,10 @@ const DatasetCard = ({
 
   return (
     <Card
-      className="w-full h-full min-h-[250px] flex flex-col transition-all duration-200 hover:shadow-md cursor-pointer bg-white"
+      className="w-full h-full min-h-[150px] flex transition-all duration-300 hover:shadow-lg hover:-translate-x-1 cursor-pointer bg-white border border-gray-100 flex-row flex-nowrap"
       onClick={handleClick}
     >
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 flex-1">
         <div className="flex justify-between items-start">
           <CardTitle className="text-xl font-semibold text-gray-800">
             {title}
@@ -61,10 +61,10 @@ const DatasetCard = ({
           {description}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow">
-        {/* Placeholder for additional content if needed */}
+      <CardContent className="w-1/4 flex items-center justify-center">
+        <Database className="h-8 w-8 text-blue-500" />
       </CardContent>
-      <CardFooter className="pt-2 border-t border-gray-100 flex justify-between items-center">
+      <CardFooter className="pt-2 border-l border-gray-100 flex flex-col justify-between items-center w-1/4">
         <div className="flex items-center text-sm text-gray-500">
           <Calendar className="h-4 w-4 mr-1" />
           Last updated: {lastUpdated}
