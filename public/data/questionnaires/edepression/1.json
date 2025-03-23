@@ -1,0 +1,46 @@
+[
+  {
+    "form": {
+      "nomFormulaire": "HAMD",
+      "nomTable": "autoq_hamd"
+    },
+    "fields": [
+      [
+        {
+          "description": "1. Humeur dépressive",
+          "variable_name": "HAMD1",
+          "possible_answers": {
+            "0": "Absent",
+            "1": "Ces états affectifs ne sont signalés que si l'on interroge le sujet",
+            "2": "Ces états affectifs sont signalés verbalement spontanément",
+            "3": "Le sujet communique ces états affectifs non verbalement",
+            "4": "Le sujet ne communique pratiquement que ces états affectifs"
+          },
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "2. Sentiments de culpabilité",
+          "variable_name": "HAMD2",
+          "possible_answers": {
+            "0": "Absent",
+            "1": "S'adresse des reproches à lui-même, a l'impression qu'il a causé un préjudice à des gens",
+            "2": "Idées de culpabilité ou ruminations sur des erreurs passées ou sur des actions condamnables",
+            "3": "La maladie actuelle est une punition. Idées délirantes de culpabilité",
+            "4": "Entend des voix qui l'accusent ou le dénoncent et/ou a des hallucinations visuelles menaçantes"
+          },
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "SCORE Total HAMD:",
+          "variable_name": "HAMD_TOTAL",
+          "possible_answers": {},
+          "data_type": "int"
+        }
+      ]
+    ]
+  }
+]

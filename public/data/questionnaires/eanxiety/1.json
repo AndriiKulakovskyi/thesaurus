@@ -1,0 +1,44 @@
+[
+  {
+    "form": {
+      "nomFormulaire": "GAD7",
+      "nomTable": "autoq_gad7"
+    },
+    "fields": [
+      [
+        {
+          "description": "1. Sentiment de nervosité, d'anxiété ou de tension",
+          "variable_name": "GAD7_1",
+          "possible_answers": {
+            "0": "Jamais",
+            "1": "Plusieurs jours",
+            "2": "Plus de la moitié des jours",
+            "3": "Presque tous les jours"
+          },
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "2. Incapable d'arrêter de s'inquiéter ou de contrôler ses inquiétudes",
+          "variable_name": "GAD7_2",
+          "possible_answers": {
+            "0": "Jamais",
+            "1": "Plusieurs jours",
+            "2": "Plus de la moitié des jours",
+            "3": "Presque tous les jours"
+          },
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "SCORE Total GAD7:",
+          "variable_name": "GAD7_TOTAL",
+          "possible_answers": {},
+          "data_type": "int"
+        }
+      ]
+    ]
+  }
+]

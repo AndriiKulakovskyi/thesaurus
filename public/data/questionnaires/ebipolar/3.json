@@ -1,0 +1,46 @@
+[
+  {
+    "form": {
+      "nomFormulaire": "YMRS",
+      "nomTable": "autoq_ymrs"
+    },
+    "fields": [
+      [
+        {
+          "description": "1. Humeur élevée",
+          "variable_name": "YMRS1",
+          "possible_answers": {
+            "0": "Absente",
+            "1": "Légèrement ou possiblement augmentée",
+            "2": "Élévation subjective nette",
+            "3": "Euphorique, rires inappropriés",
+            "4": "Euphorique, contenu du discours inapproprié, chante"
+          },
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "2. Activité motrice - énergie augmentée",
+          "variable_name": "YMRS2",
+          "possible_answers": {
+            "0": "Absente",
+            "1": "Subjectivement augmentée",
+            "2": "Animé, gestes augmentés",
+            "3": "Énergie excessive, hyperactif",
+            "4": "Agitation motrice, hyperactivité continuelle"
+          },
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "SCORE Total YMRS:",
+          "variable_name": "YMRS_TOTAL",
+          "possible_answers": {},
+          "data_type": "int"
+        }
+      ]
+    ]
+  }
+]

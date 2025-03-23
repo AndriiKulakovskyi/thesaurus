@@ -1,0 +1,44 @@
+[
+  {
+    "form": {
+      "nomFormulaire": "MADRS",
+      "nomTable": "autoq_madrs"
+    },
+    "fields": [
+      [
+        {
+          "description": "1. Tristesse apparente",
+          "variable_name": "MADRS1",
+          "possible_answers": {
+            "0": "Pas de tristesse",
+            "1": "Semble découragé mais peut se dérider sans difficulté",
+            "2": "Paraît triste et malheureux la plupart du temps",
+            "3": "Semble malheureux tout le temps. Extrêmement découragé"
+          },
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "2. Tristesse exprimée",
+          "variable_name": "MADRS2",
+          "possible_answers": {
+            "0": "Pas de tristesse",
+            "1": "Abattement ou découragement",
+            "2": "Pleure à la moindre contrariété",
+            "3": "Semble incapable de ressentir autre chose que de la tristesse"
+          },
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "SCORE Total MADRS:",
+          "variable_name": "MADRS_TOTAL",
+          "possible_answers": {},
+          "data_type": "int"
+        }
+      ]
+    ]
+  }
+]

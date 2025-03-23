@@ -1,0 +1,44 @@
+[
+  {
+    "form": {
+      "nomFormulaire": "PHQ9",
+      "nomTable": "autoq_phq9"
+    },
+    "fields": [
+      [
+        {
+          "description": "1. Peu d'intérêt ou de plaisir à faire les choses",
+          "variable_name": "PHQ9_1",
+          "possible_answers": {
+            "0": "Jamais",
+            "1": "Plusieurs jours",
+            "2": "Plus de la moitié des jours",
+            "3": "Presque tous les jours"
+          },
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "2. Être triste, déprimé(e) ou désespéré(e)",
+          "variable_name": "PHQ9_2",
+          "possible_answers": {
+            "0": "Jamais",
+            "1": "Plusieurs jours",
+            "2": "Plus de la moitié des jours",
+            "3": "Presque tous les jours"
+          },
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "SCORE Total PHQ9:",
+          "variable_name": "PHQ9_TOTAL",
+          "possible_answers": {},
+          "data_type": "int"
+        }
+      ]
+    ]
+  }
+]

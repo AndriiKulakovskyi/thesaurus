@@ -1,0 +1,66 @@
+[
+  {
+    "form": {
+      "nomFormulaire": "PANSS",
+      "nomTable": "autoq_panss"
+    },
+    "fields": [
+      [
+        {
+          "description": "P1. Idées délirantes",
+          "variable_name": "PANSS_P1",
+          "possible_answers": {
+            "1": "Absent",
+            "2": "Minime",
+            "3": "Léger",
+            "4": "Modéré",
+            "5": "Modérément sévère",
+            "6": "Sévère",
+            "7": "Extrême"
+          },
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "P2. Désorganisation conceptuelle",
+          "variable_name": "PANSS_P2",
+          "possible_answers": {
+            "1": "Absent",
+            "2": "Minime",
+            "3": "Léger",
+            "4": "Modéré",
+            "5": "Modérément sévère",
+            "6": "Sévère",
+            "7": "Extrême"
+          },
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "SCORE Symptômes positifs:",
+          "variable_name": "PANSS_POS_SCORE",
+          "possible_answers": {},
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "SCORE Symptômes négatifs:",
+          "variable_name": "PANSS_NEG_SCORE",
+          "possible_answers": {},
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "SCORE Total PANSS:",
+          "variable_name": "PANSS_TOTAL",
+          "possible_answers": {},
+          "data_type": "int"
+        }
+      ]
+    ]
+  }
+]

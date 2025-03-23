@@ -1,0 +1,52 @@
+[
+  {
+    "form": {
+      "nomFormulaire": "STAI",
+      "nomTable": "autoq_stai"
+    },
+    "fields": [
+      [
+        {
+          "description": "1. Je me sens calme",
+          "variable_name": "STAI_1",
+          "possible_answers": {
+            "1": "Pas du tout",
+            "2": "Un peu",
+            "3": "Modérément",
+            "4": "Beaucoup"
+          },
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "2. Je me sens en sécurité",
+          "variable_name": "STAI_2",
+          "possible_answers": {
+            "1": "Pas du tout",
+            "2": "Un peu",
+            "3": "Modérément",
+            "4": "Beaucoup"
+          },
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "SCORE Anxiété-État:",
+          "variable_name": "STAI_STATE_SCORE",
+          "possible_answers": {},
+          "data_type": "int"
+        }
+      ],
+      [
+        {
+          "description": "SCORE Anxiété-Trait:",
+          "variable_name": "STAI_TRAIT_SCORE",
+          "possible_answers": {},
+          "data_type": "int"
+        }
+      ]
+    ]
+  }
+]
