@@ -7,13 +7,13 @@ import routes from "tempo-routes";
 function App() {
   return (
     <Suspense fallback={<p>Loading...</p>}>
-      <>
+      <div>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/dataset/:id" element={<DatasetDetail />} />
         </Routes>
         {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
-      </>
+      </div>
     </Suspense>
   );
 }

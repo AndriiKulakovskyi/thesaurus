@@ -61,7 +61,11 @@ const QuestionnaireVariables = ({
           throw new Error("Failed to fetch questionnaire data");
         }
         const data = await response.json();
-        setQuestionnaire(data[0]); // Assuming the JSON structure has the questionnaire as the first item
+        if (Array.isArray(data) && data.length > 0) {
+          setQuestionnaire(data[0]); // Assuming the JSON structure has the questionnaire as the first item
+        } else {
+          throw new Error("Invalid questionnaire data format");
+        }
         setLoading(false);
       } catch (err) {
         console.error("Error fetching questionnaire:", err);
@@ -76,11 +80,14 @@ const QuestionnaireVariables = ({
   const handleVariableToggle = (
     variableName: string,
     description: string,
-    isChecked: boolean,
+    isChecked: boolean | string,
   ) => {
+    // Convert to boolean if it's a string
+    const checked =
+      typeof isChecked === "string" ? isChecked === "true" : !!isChecked;
     let newSelectedVariables;
 
-    if (isChecked) {
+    if (checked) {
       // Add to selected variables if not already selected
       if (
         !selectedVariables.some((variable) => variable.name === variableName)
