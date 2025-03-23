@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import {
   ArrowLeft,
-  Database,
+  Database as DatabaseIcon,
   Calendar,
   Check,
   X,
@@ -19,38 +19,54 @@ import { useToast } from "./ui/use-toast";
 import BreadcrumbNav from "./BreadcrumbNav";
 import FloatingSelectionIndicator from "./FloatingSelectionIndicator";
 import DataSelectionGuide from "./DataSelectionGuide";
+import { 
+  Database, 
+  Questionnaire, 
+  VariableSelection as ApiVariableSelection,
+  ExtractionRequest,
+  fetchDatabase,
+  fetchQuestionnaires,
+  submitExtraction
+} from "../lib/api";
 
-interface Dataset {
-  id: string;
-  title: string;
-  description: string;
-  record_count: number;
-  last_updated: string;
-  questionnaires_models: string[];
-  questionnaires_folder: string;
-}
-
-interface VariableSelection {
+interface ComponentVariableSelection {
   datasetId: string;
   questionnaireId: string;
   formName: string;
   selectedVariables: { name: string; description: string }[];
 }
 
+// Helper to get questionnaire identifier
+const getQuestionnaireId = (questionnaire: Questionnaire): string => {
+  // Use the index in the questionnaires_models array as a more reliable ID
+  // rather than just the form name which could potentially be the same
+  const formName = questionnaire.form.nomFormulaire;
+  // Create a unique ID from the form name and table name to ensure uniqueness
+  return `${formName.replace(".json", "")}_${questionnaire.form.nomTable}`;
+};
+
 const DatasetDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [dataset, setDataset] = useState<Dataset | null>(null);
+  const [dataset, setDataset] = useState<Database | null>(null);
+  const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedQuestionnaire, setSelectedQuestionnaire] = useState<
     string | null
   >(null);
   const [variableSelections, setVariableSelections] = useState<
-    VariableSelection[]
+    ComponentVariableSelection[]
   >([]);
   const [activeTab, setActiveTab] = useState<string>("questionnaires");
+  const [submitting, setSubmitting] = useState(false);
+  
+  // Calculate total selected variables
+  const totalSelectedVariables = variableSelections.reduce(
+    (total, selection) => total + selection.selectedVariables.length,
+    0
+  );
 
   // Determine the current step for the DataSelectionGuide
   const getCurrentStep = () => {
@@ -79,73 +95,37 @@ const DatasetDetail = () => {
   };
 
   useEffect(() => {
-    // Simulate API call to fetch dataset details
-    const fetchDataset = async () => {
+    const loadDataset = async () => {
+      if (!id) return;
+      
       try {
-        // In a real application, this would be an API call
-        // For now, we'll simulate a delay and return mock data
-        await new Promise((resolve) => setTimeout(resolve, 800));
-
-        // Mock data based on the dataset ID
-        const mockDatasets: Record<string, Dataset> = {
-          ebipolar: {
-            id: "ebipolar",
-            questionnaires_models: ["1.json", "2.json", "3.json"],
-            questionnaires_folder: "data/questionnaires/ebipolar",
-            title: "Clinical Assessment Database",
-            description:
-              "Structured clinical data including DSM diagnoses, mood ratings, and pharmacotherapy records for bipolar patients.",
-            record_count: 250,
-            last_updated: "2023-10-12",
-          },
-          eschizo: {
-            id: "eschizo",
-            questionnaires_models: ["1.json"],
-            questionnaires_folder: "data/questionnaires/eschizo",
-            title: "Neurocognitive Performance Database",
-            description:
-              "Results from cognitive tasks (working memory, attention, executive function) for schizophrenia participants.",
-            record_count: 180,
-            last_updated: "2023-08-30",
-          },
-          edepression: {
-            id: "edepression",
-            questionnaires_models: ["1.json", "2.json"],
-            questionnaires_folder: "data/questionnaires/edepression",
-            title: "Depression Assessment Database",
-            description:
-              "Comprehensive depression scales, symptom tracking, and treatment response data for major depressive disorder research.",
-            record_count: 320,
-            last_updated: "2023-11-05",
-          },
-          eanxiety: {
-            id: "eanxiety",
-            questionnaires_models: ["1.json", "2.json"],
-            questionnaires_folder: "data/questionnaires/eanxiety",
-            title: "Anxiety Disorders Database",
-            description:
-              "Anxiety assessment scales, physiological measurements, and behavioral observations for anxiety disorder research.",
-            record_count: 215,
-            last_updated: "2023-09-18",
-          },
-        };
-
-        if (id && mockDatasets[id]) {
-          setDataset(mockDatasets[id]);
-        } else {
-          setError("Dataset not found");
-        }
+        setLoading(true);
+        
+        // Fetch the database details
+        const datasetData = await fetchDatabase(id);
+        setDataset(datasetData);
+        
+        // Fetch questionnaires for this dataset
+        const questionnairesData = await fetchQuestionnaires(id);
+        setQuestionnaires(questionnairesData);
+        
+        // Log the questionnaire IDs to help with debugging
+        console.log("Questionnaires loaded:", questionnairesData.map(q => ({
+          form: q.form.nomFormulaire,
+          table: q.form.nomTable,
+          id: getQuestionnaireId(q)
+        })));
+        
         setLoading(false);
       } catch (err) {
-        setError("Failed to load dataset details. Please try again later.");
+        const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+        setError(errorMessage);
         setLoading(false);
-        console.error("Error fetching dataset:", err);
+        console.error("Error loading dataset:", err);
       }
     };
 
-    if (id) {
-      fetchDataset();
-    }
+    loadDataset();
   }, [id]);
 
   const handleBackClick = () => {
@@ -153,6 +133,7 @@ const DatasetDetail = () => {
   };
 
   const handleQuestionnaireClick = (questionnaireId: string) => {
+    console.log("Selected questionnaire:", questionnaireId);
     setSelectedQuestionnaire(questionnaireId);
     setActiveTab("variables");
   };
@@ -162,24 +143,26 @@ const DatasetDetail = () => {
     setActiveTab("questionnaires");
   };
 
-  const handleVariableSelectionChange = (selection: VariableSelection) => {
+  const handleVariableSelectionChange = (selection: ComponentVariableSelection) => {
+    // Log to confirm what selection was received
+    console.log("Selection received:", selection);
+    
     // Update the selections array, replacing any existing selection for this questionnaire
     const updatedSelections = variableSelections.filter(
-      (s) => s.questionnaireId !== selection.questionnaireId,
+      (s) => s.questionnaireId !== selection.questionnaireId
     );
-
-    // Only add the selection if there are selected variables
+    
+    // Only add the selection if there are variables selected
     if (selection.selectedVariables.length > 0) {
       updatedSelections.push(selection);
-
-      // Show toast notification for variable selection
-      toast({
-        title: "Variables Selected",
-        description: `${selection.selectedVariables.length} variables selected from ${selection.formName}`,
-        variant: "success",
-      });
+      console.log("Added selection for:", selection.questionnaireId);
+    } else {
+      console.log("Removed selection for:", selection.questionnaireId);
     }
-
+    
+    // Log the updated selections
+    console.log("Updated selections:", updatedSelections);
+    
     setVariableSelections(updatedSelections);
   };
 
@@ -198,31 +181,50 @@ const DatasetDetail = () => {
     });
   };
 
-  const handleFinalizeSelections = () => {
-    // Print the selected variables to the console
-    console.log("Selected Variables:", variableSelections);
-
-    // Create a formatted output for the console
-    const output = {
-      datasetId: id,
-      datasetTitle: dataset?.title,
-      selections: variableSelections.map((selection) => ({
-        formName: selection.formName,
-        variables: selection.selectedVariables.map((v) => ({
-          name: v.name,
-          description: v.description,
-        })),
-      })),
+  const handleFinalizeSelections = async () => {
+    if (!dataset) return;
+    
+    // Show loading state
+    setSubmitting(true);
+    
+    // Convert component selections to API format
+    const apiSelections: ApiVariableSelection[] = variableSelections.map(selection => ({
+      questionnaireId: selection.questionnaireId,
+      variables: selection.selectedVariables.map(v => v.name)
+    }));
+    
+    // Create the request object
+    const extractionRequest: ExtractionRequest = {
+      datasetId: dataset.id,
+      selections: apiSelections
     };
-
-    console.log("FINAL SELECTION:", JSON.stringify(output, null, 2));
-
-    // Show a toast notification instead of an alert
-    toast({
-      title: "Selection Finalized",
-      description: `${totalSelectedVariables} variables have been extracted successfully`,
-      variant: "success",
-    });
+    
+    try {
+      // Send the extraction request to the API
+      const response = await submitExtraction(extractionRequest);
+      
+      // Show success message
+      toast({
+        title: "Data extraction successful",
+        description: `${response.total_variables} variables extracted from ${response.selections_count} questionnaires.`,
+        duration: 5000,
+      });
+      
+      // Could navigate to a success page or download page here
+      // navigate('/extract/success', { state: { response } });
+      
+    } catch (err) {
+      // Show error message
+      toast({
+        title: "Data extraction failed",
+        description: err instanceof Error ? err.message : "An unknown error occurred",
+        variant: "destructive",
+        duration: 5000,
+      });
+      console.error("Extraction error:", err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // Get the current selection for the active questionnaire (if any)
@@ -236,11 +238,55 @@ const DatasetDetail = () => {
     return selection?.selectedVariables || [];
   };
 
-  // Count total selected variables
-  const totalSelectedVariables = variableSelections.reduce(
-    (total, selection) => total + selection.selectedVariables.length,
-    0,
-  );
+  const renderQuestionnaires = () => {
+    return questionnaires.map((questionnaire, index) => {
+      const questionnaireId = getQuestionnaireId(questionnaire);
+      // Check if this questionnaire has any selected variables
+      const selection = variableSelections.find(
+        (s) => s.questionnaireId === questionnaireId
+      );
+      const hasSelections = selection && selection.selectedVariables.length > 0;
+
+      return (
+        <div
+          key={questionnaireId}
+          className={`border rounded-lg p-5 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md ${
+            hasSelections ? "border-green-300 bg-green-50 hover:bg-green-100" : "border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+          }`}
+          onClick={() => handleQuestionnaireClick(questionnaireId)}
+        >
+          <div className="flex justify-between items-start">
+            <h3 className="font-medium text-gray-800">
+              {`Questionnaire ${index + 1}: ${questionnaire.form.nomFormulaire}` || `Questionnaire ${questionnaireId}`}
+            </h3>
+            {hasSelections && (
+              <Badge
+                variant="outline"
+                className="bg-green-100 border-green-300 text-green-800"
+              >
+                {selection?.selectedVariables.length} selected
+              </Badge>
+            )}
+          </div>
+          <p className="mt-2 text-sm text-gray-500">
+            {questionnaire.form.nomTable || "No description available"}
+          </p>
+        </div>
+      );
+    });
+  };
+
+  const renderVariableSelectionSummary = () => {
+    return (
+      <VariableSelectionSummary
+        selections={variableSelections}
+        onFinalize={handleFinalizeSelections}
+        onClear={handleClearSelections}
+        onEdit={handleEditSelection}
+        isSubmitting={submitting}
+      />
+    );
+  };
 
   if (loading) {
     return (
@@ -337,7 +383,7 @@ const DatasetDetail = () => {
                   variant="outline"
                   className="bg-blue-50 text-blue-700 border-blue-200 self-start"
                 >
-                  <Database className="h-3 w-3 mr-1" />
+                  <DatabaseIcon className="h-3 w-3 mr-1" />
                   {dataset.record_count} records
                 </Badge>
               </div>
@@ -391,42 +437,7 @@ const DatasetDetail = () => {
                   </p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                    {dataset.questionnaires_models.map((questionnaire) => {
-                      // Check if this questionnaire has any selected variables
-                      const selection = variableSelections.find(
-                        (s) =>
-                          s.questionnaireId ===
-                          questionnaire.replace(".json", ""),
-                      );
-                      const hasSelections =
-                        selection && selection.selectedVariables.length > 0;
-
-                      return (
-                        <div
-                          key={questionnaire}
-                          className={`border rounded-lg p-5 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md ${hasSelections ? "border-green-300 bg-green-50 hover:bg-green-100" : "border-gray-200 hover:border-blue-300 hover:bg-blue-50"}`}
-                          onClick={() =>
-                            handleQuestionnaireClick(
-                              questionnaire.replace(".json", ""),
-                            )
-                          }
-                        >
-                          <div className="flex justify-between items-start">
-                            <h3 className="font-medium text-gray-800">
-                              Questionnaire {questionnaire.replace(".json", "")}
-                            </h3>
-                            {hasSelections && (
-                              <Badge className="bg-green-100 text-green-800 border-green-200">
-                                {selection.selectedVariables.length} selected
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-sm text-gray-500 mt-1">
-                            Click to view variables and select for extraction
-                          </p>
-                        </div>
-                      );
-                    })}
+                    {renderQuestionnaires()}
                   </div>
                 </div>
 
@@ -472,12 +483,9 @@ const DatasetDetail = () => {
                       </div>
                     </>
                   ) : (
-                    <VariableSelectionSummary
-                      selections={variableSelections}
-                      onFinalize={handleFinalizeSelections}
-                      onClear={handleClearSelections}
-                      onEdit={handleEditSelection}
-                    />
+                    <div className="w-full">
+                      {renderVariableSelectionSummary()}
+                    </div>
                   )}
                 </div>
               </TabsContent>

@@ -4,7 +4,7 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
-import { Check, X, Edit2, ChevronRight } from "lucide-react";
+import { Check, X, Edit2, ChevronRight, Loader2 } from "lucide-react";
 
 interface VariableSelectionSummaryProps {
   selections: {
@@ -16,6 +16,7 @@ interface VariableSelectionSummaryProps {
   onFinalize: () => void;
   onClear: () => void;
   onEdit?: (questionnaireId: string) => void;
+  isSubmitting?: boolean;
 }
 
 const VariableSelectionSummary = ({
@@ -23,6 +24,7 @@ const VariableSelectionSummary = ({
   onFinalize,
   onClear,
   onEdit,
+  isSubmitting = false,
 }: VariableSelectionSummaryProps) => {
   // Count total selected variables across all questionnaires
   const totalSelectedVariables = selections.reduce(
@@ -78,6 +80,7 @@ const VariableSelectionSummary = ({
                           size="sm"
                           className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
                           onClick={() => onEdit(selection.questionnaireId)}
+                          disabled={isSubmitting}
                         >
                           <Edit2 className="h-3.5 w-3.5 mr-1" />
                           Edit
@@ -105,21 +108,32 @@ const VariableSelectionSummary = ({
               </div>
             </ScrollArea>
 
-            <div className="flex justify-between items-center mt-6">
+            <div className="flex justify-between items-center mt-6 sm:mt-8">
               <Button
                 variant="outline"
                 className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
                 onClick={onClear}
+                disabled={isSubmitting}
               >
                 <X className="h-4 w-4 mr-2" />
-                Clear All Selections
+                Clear All
               </Button>
               <Button
-                className="bg-green-600 hover:bg-green-700 text-white"
+                variant="default"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={onFinalize}
+                disabled={isSubmitting}
               >
-                <Check className="h-4 w-4 mr-2" />
-                Finalize Selection
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    Request Data <ChevronRight className="h-4 w-4 ml-2" />
+                  </>
+                )}
               </Button>
             </div>
           </>

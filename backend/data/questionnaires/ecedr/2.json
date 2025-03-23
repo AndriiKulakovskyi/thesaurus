@@ -1,0 +1,680 @@
+[
+    {
+        "form": {
+            "nomFormulaire": "Form2",
+            "nomTable": "table2"
+        },
+        "fields": [
+            [
+                {
+                    "description": "1.  est bavard",
+                    "variable_name": "BFI1",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "2. a tendance à critiquer les autres",
+                    "variable_name": "BFI2",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "3. travaille consciencieusement",
+                    "variable_name": "BFI3",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "4. est déprimé",
+                    "variable_name": "BFI4",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "5. est créatif",
+                    "variable_name": "BFI5",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "6. est réservé",
+                    "variable_name": "BFI6",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "7. est serviable et n'est pas égoïste avec les autres",
+                    "variable_name": "BFI7",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "8. peut être parfois négligent",
+                    "variable_name": "BFI8",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "9. est 'relaxe'",
+                    "variable_name": "BFI9",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "10. s'intéresse à de nombreux sujets",
+                    "variable_name": "BFI10",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "11. est plein d’énergie",
+                    "variable_name": "BFI11",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "12. commence facilement à se disputer avec les autres",
+                    "variable_name": "BFI12",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "13. est fiable dans son travail",
+                    "variable_name": "BFI13",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "14. peut être angoissé",
+                    "variable_name": "BFI14",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "15. est ingénieux",
+                    "variable_name": "BFI15",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "16. communique beaucoup d'enthousiasme",
+                    "variable_name": "BFI16",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "17. est indulgent de nature",
+                    "variable_name": "BFI17",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "18. a tendance à être désorganisé",
+                    "variable_name": "BFI18",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "19. se tourmente beaucoup",
+                    "variable_name": "BFI19",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "20. a une grande imagination",
+                    "variable_name": "BFI20",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "21. a tendance à être silencieux",
+                    "variable_name": "BFI21",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "22. fait généralement confiance aux autres",
+                    "variable_name": "BFI22",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "23. a tendance à être paresseux",
+                    "variable_name": "BFI23",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "24. est quelqu'un de tempéré",
+                    "variable_name": "BFI24",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "25. est inventif",
+                    "variable_name": "BFI25",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "26. a une forte personnalité",
+                    "variable_name": "BFI26",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "27. est parfois dédaigneux",
+                    "variable_name": "BFI27",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "28. persévère jusqu’à ce que sa tâche soit finie",
+                    "variable_name": "BFI28",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "29. peut être lunatique d'humeur changeante",
+                    "variable_name": "BFI29",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "30. apprécie les activités artistiques et esthétiques",
+                    "variable_name": "BFI30",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "31. est quelquefois timide",
+                    "variable_name": "BFI31",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "32. est prévenant et gentil avec presque tout le monde",
+                    "variable_name": "BFI32",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "33. est efficace dans son travail",
+                    "variable_name": "BFI33",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "34. reste calme dans les situations angoissantes",
+                    "variable_name": "BFI34",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "35. préfère un travail simple et routinier",
+                    "variable_name": "BFI35",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "36. est sociable",
+                    "variable_name": "BFI36",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "37. est parfois impoli avec les autres",
+                    "variable_name": "BFI37",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "38. fait des projets et les poursuit",
+                    "variable_name": "BFI38",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "39. est facilement anxieux",
+                    "variable_name": "BFI39",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "40. aime réfléchir et jouer avec des idées",
+                    "variable_name": "BFI40",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "41. est peu intéressé par tout ce qui est artistique",
+                    "variable_name": "BFI41",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "42. aime coopérer avec les autres",
+                    "variable_name": "BFI42",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "43. est facilement distrait",
+                    "variable_name": "BFI43",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "44. a de bonnes connaissances en art",
+                    "variable_name": "BFI44",
+                    "possible_answers": {
+                        "1": "désapprouve fortement",
+                        "2": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "4": "approuve un peu",
+                        "5": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "45. cherche des histoires aux autres",
+                    "variable_name": "BFI45",
+                    "possible_answers": {
+                        "5": "désapprouve fortement",
+                        "4": "désapprouve un peu",
+                        "3": "n’approuve ni ne désapprouve",
+                        "2": "approuve un peu",
+                        "1": "approuve fortement"
+                    },
+                    "data_type": "int"
+                }
+            ],
+            [
+                {
+                    "description": "SCORE Extraversion:",
+                    "variable_name": "EXTRA_BIF_SCORE",
+                    "possible_answers": {},
+                    "data_type": "string"
+                }
+            ],
+            [
+                {
+                    "description": "SCORE Agréabilité :",
+                    "variable_name": "AGREA_BIF_SCORE",
+                    "possible_answers": {},
+                    "data_type": "string"
+                }
+            ],
+            [
+                {
+                    "description": "SCORE  Emotions Négatives:",
+                    "variable_name": "EMO_NEG_BIF_SCORE",
+                    "possible_answers": {},
+                    "data_type": "string"
+                }
+            ],
+            [
+                {
+                    "description": "SCORE Conscience:",
+                    "variable_name": "CONS_BIF_SCORE",
+                    "possible_answers": {},
+                    "data_type": "string"
+                }
+            ],
+            [
+                {
+                    "description": "SCORE Ouverture:",
+                    "variable_name": "OUVERT_BIF_SCORE",
+                    "possible_answers": {},
+                    "data_type": "string"
+                }
+            ]
+        ]
+    }
+]

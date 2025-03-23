@@ -5,22 +5,13 @@ import { Separator } from "./ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { ScrollArea } from "./ui/scroll-area";
+import { Questionnaire, fetchQuestionnaires } from "../lib/api";
 
 interface QuestionnaireField {
   description: string;
   variable_name: string;
   possible_answers: Record<string, string>;
   data_type: string;
-}
-
-interface QuestionnaireForm {
-  nomFormulaire: string;
-  nomTable: string;
-}
-
-interface QuestionnaireData {
-  form: QuestionnaireForm;
-  fields: QuestionnaireField[][];
 }
 
 interface QuestionnaireVariablesProps {
@@ -35,13 +26,19 @@ interface QuestionnaireVariablesProps {
   initialSelections?: { name: string; description: string }[];
 }
 
+// Helper to get questionnaire identifier - must match the format in DatasetDetail
+const getQuestionnaireId = (questionnaire: Questionnaire): string => {
+  const formName = questionnaire.form.nomFormulaire;
+  return `${formName.replace(".json", "")}_${questionnaire.form.nomTable}`;
+};
+
 const QuestionnaireVariables = ({
   questionnaireId,
   datasetId,
   onSelectionChange,
   initialSelections = [],
 }: QuestionnaireVariablesProps) => {
-  const [questionnaire, setQuestionnaire] = useState<QuestionnaireData | null>(
+  const [questionnaire, setQuestionnaire] = useState<Questionnaire | null>(
     null,
   );
   const [loading, setLoading] = useState(true);
@@ -50,31 +47,33 @@ const QuestionnaireVariables = ({
     useState<{ name: string; description: string }[]>(initialSelections);
 
   useEffect(() => {
-    const fetchQuestionnaire = async () => {
+    const loadQuestionnaire = async () => {
       try {
         setLoading(true);
-        // Fetch the questionnaire data from the JSON file
-        const response = await fetch(
-          `/data/questionnaires/${datasetId}/${questionnaireId}.json`,
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch questionnaire data");
-        }
-        const data = await response.json();
-        if (Array.isArray(data) && data.length > 0) {
-          setQuestionnaire(data[0]); // Assuming the JSON structure has the questionnaire as the first item
+        
+        // Fetch all questionnaires for this dataset
+        const questionnaires = await fetchQuestionnaires(datasetId);
+        
+        // Find the specific questionnaire we need using the consistent ID format
+        const found = questionnaires.find(q => {
+          return getQuestionnaireId(q) === questionnaireId;
+        });
+        
+        if (found) {
+          setQuestionnaire(found);
         } else {
-          throw new Error("Invalid questionnaire data format");
+          throw new Error(`Questionnaire ${questionnaireId} not found in dataset ${datasetId}`);
         }
+        
         setLoading(false);
       } catch (err) {
         console.error("Error fetching questionnaire:", err);
-        setError("Failed to load questionnaire data. Please try again later.");
+        setError(err instanceof Error ? err.message : "Failed to load questionnaire data");
         setLoading(false);
       }
     };
 
-    fetchQuestionnaire();
+    loadQuestionnaire();
   }, [datasetId, questionnaireId]);
 
   const handleVariableToggle = (
@@ -142,6 +141,7 @@ const QuestionnaireVariables = ({
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl font-bold text-gray-800">
             {questionnaire.form.nomFormulaire}
+            <span className="text-xs font-normal text-gray-500 block mt-1">ID: {questionnaireId}</span>
           </CardTitle>
           <Badge variant="outline" className="bg-blue-50 text-blue-700">
             {flattenedFields.length} variables

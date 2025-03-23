@@ -2,74 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DatasetCard from "./DatasetCard";
 import { Skeleton } from "./ui/skeleton";
-
-interface Dataset {
-  id: string;
-  title: string;
-  description: string;
-  record_count: number;
-  last_updated: string;
-  questionnaires_models: string[];
-  questionnaires_folder: string;
-}
+import { fetchDatabases, Database } from "../lib/api";
 
 const DatasetGrid = () => {
-  const [datasets, setDatasets] = useState<Dataset[]>([]);
+  const [datasets, setDatasets] = useState<Database[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate API call to fetch datasets
-    const fetchDatasets = async () => {
+    const getDatabases = async () => {
       try {
-        // In a real application, this would be an API call
-        // For now, we'll simulate a delay and return mock data
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        const mockData: Dataset[] = [
-          {
-            id: "ebipolar",
-            questionnaires_models: ["1.json", "2.json", "3.json"],
-            questionnaires_folder: "data/questionnaires/ebipolar",
-            title: "Clinical Assessment Database",
-            description:
-              "Structured clinical data including DSM diagnoses, mood ratings, and pharmacotherapy records for bipolar patients.",
-            record_count: 250,
-            last_updated: "2023-10-12",
-          },
-          {
-            id: "eschizo",
-            questionnaires_models: ["1.json"],
-            questionnaires_folder: "data/questionnaires/eschizo",
-            title: "Neurocognitive Performance Database",
-            description:
-              "Results from cognitive tasks (working memory, attention, executive function) for schizophrenia participants.",
-            record_count: 180,
-            last_updated: "2023-08-30",
-          },
-          {
-            id: "edepression",
-            questionnaires_models: ["1.json", "2.json"],
-            questionnaires_folder: "data/questionnaires/edepression",
-            title: "Depression Assessment Database",
-            description:
-              "Comprehensive depression scales, symptom tracking, and treatment response data for major depressive disorder research.",
-            record_count: 320,
-            last_updated: "2023-11-05",
-          },
-          {
-            id: "eanxiety",
-            questionnaires_models: ["1.json", "2.json"],
-            questionnaires_folder: "data/questionnaires/eanxiety",
-            title: "Anxiety Disorders Database",
-            description:
-              "Anxiety assessment scales, physiological measurements, and behavioral observations for anxiety disorder research.",
-            record_count: 215,
-            last_updated: "2023-09-18",
-          },
-        ];
-
-        setDatasets(mockData);
+        const data = await fetchDatabases();
+        setDatasets(data);
         setLoading(false);
       } catch (err) {
         setError("Failed to load datasets. Please try again later.");
@@ -78,7 +22,7 @@ const DatasetGrid = () => {
       }
     };
 
-    fetchDatasets();
+    getDatabases();
   }, []);
 
   const navigate = useNavigate();

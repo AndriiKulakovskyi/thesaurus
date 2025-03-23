@@ -1,0 +1,38 @@
+[
+  {
+    "id": "ebipolar",
+    "questionnaires_models":["1.json","2.json","3.json"],
+    "questionnaires_folder": "data/questionnaires/ebipolar",
+    "title": "Bipolarrity: clinical assessment database",
+    "description": "Structured clinical data including DSM diagnoses, mood ratings, and pharmacotherapy records for bipolar patients.",
+    "record_count": 250,
+    "last_updated": "2023-10-12"
+  },
+  {
+    "id": "eschizo",
+    "questionnaires_models":["1.json"],
+    "questionnaires_folder": "data/questionnaires/eschizo",
+    "title": "Schizophrenia: clinical assessment database",
+    "description": "Results from cognitive tasks (working memory, attention, executive function) for schizophrenia participants.",
+    "record_count": 180,
+    "last_updated": "2023-08-30"
+  },
+  {
+    "id": "easpeger",
+    "questionnaires_models":["1.json","2.json","3.json","4.json"],
+    "questionnaires_folder": "data/questionnaires/easpeger",
+    "title": "Developmental History Database",
+    "description": "Detailed developmental milestones, social interaction patterns, and communication assessments.",
+    "record_count": 110,
+    "last_updated": "2024-01-10"
+  },
+  {
+    "id": "ecedr",
+    "questionnaires_models":["1.json","2.json"],
+    "questionnaires_folder": "data/questionnaires/ecedr",
+    "title": "Depression: clinical assessment database",
+    "description": "HAMD, MADRS, PHQ-9 scores across treatment phases with clinician notes and follow-ups.",
+    "record_count": 320,
+    "last_updated": "2023-07-15"
+  }
+]
