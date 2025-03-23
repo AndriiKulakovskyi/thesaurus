@@ -145,6 +145,12 @@ const DatasetDetail = () => {
     setVariableSelections(updatedSelections);
   };
 
+  const handleEditSelection = (questionnaireId: string) => {
+    // Set the selected questionnaire and switch to the variables tab
+    setSelectedQuestionnaire(questionnaireId);
+    setActiveTab("variables");
+  };
+
   const handleClearSelections = () => {
     setVariableSelections([]);
   };
@@ -383,6 +389,7 @@ const DatasetDetail = () => {
                   selections={variableSelections}
                   onFinalize={handleFinalizeSelections}
                   onClear={handleClearSelections}
+                  onEdit={handleEditSelection}
                 />
               )}
             </div>

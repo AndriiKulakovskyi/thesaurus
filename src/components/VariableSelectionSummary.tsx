@@ -4,7 +4,7 @@ import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
-import { Check, X } from "lucide-react";
+import { Check, X, Edit2, ChevronRight } from "lucide-react";
 
 interface VariableSelectionSummaryProps {
   selections: {
@@ -15,12 +15,14 @@ interface VariableSelectionSummaryProps {
   }[];
   onFinalize: () => void;
   onClear: () => void;
+  onEdit?: (questionnaireId: string) => void;
 }
 
 const VariableSelectionSummary = ({
   selections,
   onFinalize,
   onClear,
+  onEdit,
 }: VariableSelectionSummaryProps) => {
   // Count total selected variables across all questionnaires
   const totalSelectedVariables = selections.reduce(
@@ -63,12 +65,25 @@ const VariableSelectionSummary = ({
               <div className="space-y-6">
                 {nonEmptySelections.map((selection, index) => (
                   <div key={index} className="space-y-2">
-                    <h3 className="font-medium text-gray-800">
-                      {selection.formName}{" "}
-                      <span className="text-sm text-gray-500">
-                        ({selection.selectedVariables.length} variables)
-                      </span>
-                    </h3>
+                    <div className="flex justify-between items-center">
+                      <h3 className="font-medium text-gray-800">
+                        {selection.formName}{" "}
+                        <span className="text-sm text-gray-500">
+                          ({selection.selectedVariables.length} variables)
+                        </span>
+                      </h3>
+                      {onEdit && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                          onClick={() => onEdit(selection.questionnaireId)}
+                        >
+                          <Edit2 className="h-3.5 w-3.5 mr-1" />
+                          Edit
+                        </Button>
+                      )}
+                    </div>
                     <div className="bg-gray-50 rounded-md p-3 space-y-2">
                       {selection.selectedVariables.map((variable, varIndex) => (
                         <div
