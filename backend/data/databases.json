@@ -19,7 +19,7 @@
   },
   {
     "id": "easpeger",
-    "questionnaires_models":["1.json","2.json","3.json","4.json"],
+    "questionnaires_models":["1.json","2.json","3.json","4.json","5.json"],
     "questionnaires_folder": "data/questionnaires/easpeger",
     "title": "Developmental History Database",
     "description": "Detailed developmental milestones, social interaction patterns, and communication assessments.",
