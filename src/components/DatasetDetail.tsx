@@ -38,8 +38,9 @@ interface ComponentVariableSelection {
 // Helper to get questionnaire identifier
 const getQuestionnaireId = (tableName: string, schemaName: string): string => {
   // Create a unique ID based on the schema and table name
-  // The table name might already include the schema, so check for that
+  // Extract the short table name (without schema) to use as prefix
   const shortTableName = tableName.includes('.') ? tableName.split('.')[1] : tableName;
+  // Create ID format that matches our parsing logic: shortTableName_fullTableName
   return `${shortTableName}_${tableName}`;
 };
 
@@ -239,6 +240,8 @@ const DatasetDetail = () => {
   const renderQuestionnaires = () => {
     return questionnaires.map((questionnaire, index) => {
       const questionnaireId = getQuestionnaireId(questionnaire.form.nomTable, id || '');
+      console.log(`Generated ID for ${questionnaire.form.nomTable}:`, questionnaireId);
+      
       // Check if this questionnaire has any selected variables
       const selection = variableSelections.find(
         (s) => s.questionnaireId === questionnaireId

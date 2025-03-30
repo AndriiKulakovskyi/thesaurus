@@ -29,10 +29,10 @@ interface QuestionnaireVariablesProps {
 
 // Helper to extract the table name from questionnaire ID
 const getTableNameFromId = (questionnaireId: string): string => {
-  // The questionnaire ID should be in the format: shortName_schema.tableName
-  const parts = questionnaireId.split('_');
-  if (parts.length > 1) {
-    return parts[parts.length - 1];
+  // The ID format is shortTableName_fullTableName, so we need to get everything after the first underscore
+  const firstUnderscoreIndex = questionnaireId.indexOf('_');
+  if (firstUnderscoreIndex !== -1 && firstUnderscoreIndex < questionnaireId.length - 1) {
+    return questionnaireId.substring(firstUnderscoreIndex + 1);
   }
   return questionnaireId;
 };
@@ -59,10 +59,38 @@ const QuestionnaireVariables = ({
         
         // Find the specific questionnaire we need using the table name from the ID
         const tableName = getTableNameFromId(questionnaireId);
+        console.log('Extracted table name:', tableName);
+        console.log('Looking for table in questionnaires:', questionnaires.map(q => q.form.nomTable));
         
-        const found = questionnaires.find(q => q.form.nomTable === tableName);
+        // Try to find an exact match first
+        let found = questionnaires.find(q => q.form.nomTable === tableName);
+        
+        // If no exact match, try a more flexible match (case insensitive or partial)
+        if (!found && questionnaires.length > 0) {
+          found = questionnaires.find(q => {
+            // Try to match without being case sensitive
+            return q.form.nomTable.toLowerCase() === tableName.toLowerCase();
+          });
+          
+          // If still not found, try to match by the end of the table name (which might include schema)
+          if (!found) {
+            found = questionnaires.find(q => {
+              return tableName.endsWith(q.form.nomTable) || q.form.nomTable.endsWith(tableName);
+            });
+          }
+          
+          // Last resort: try to match by the short table name
+          if (!found && tableName.includes('.')) {
+            const shortTableName = tableName.split('.').pop() || '';
+            found = questionnaires.find(q => {
+              const qShortName = q.form.nomTable.split('.').pop() || '';
+              return qShortName === shortTableName;
+            });
+          }
+        }
         
         if (found) {
+          console.log('Found matching questionnaire:', found.form.nomTable);
           setQuestionnaire(found);
         } else {
           throw new Error(`Questionnaire ${questionnaireId} not found in dataset ${datasetId}`);
