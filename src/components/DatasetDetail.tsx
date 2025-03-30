@@ -21,7 +21,6 @@ import FloatingSelectionIndicator from "./FloatingSelectionIndicator";
 import DataSelectionGuide from "./DataSelectionGuide";
 import { 
   Database, 
-  Questionnaire, 
   VariableSelection as ApiVariableSelection,
   ExtractionRequest,
   fetchDatabase,
@@ -37,12 +36,11 @@ interface ComponentVariableSelection {
 }
 
 // Helper to get questionnaire identifier
-const getQuestionnaireId = (questionnaire: Questionnaire): string => {
-  // Use the index in the questionnaires_models array as a more reliable ID
-  // rather than just the form name which could potentially be the same
-  const formName = questionnaire.form.nomFormulaire;
-  // Create a unique ID from the form name and table name to ensure uniqueness
-  return `${formName.replace(".json", "")}_${questionnaire.form.nomTable}`;
+const getQuestionnaireId = (tableName: string, schemaName: string): string => {
+  // Create a unique ID based on the schema and table name
+  // The table name might already include the schema, so check for that
+  const shortTableName = tableName.includes('.') ? tableName.split('.')[1] : tableName;
+  return `${shortTableName}_${tableName}`;
 };
 
 const DatasetDetail = () => {
@@ -50,7 +48,7 @@ const DatasetDetail = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [dataset, setDataset] = useState<Database | null>(null);
-  const [questionnaires, setQuestionnaires] = useState<Questionnaire[]>([]);
+  const [questionnaires, setQuestionnaires] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedQuestionnaire, setSelectedQuestionnaire] = useState<
@@ -101,11 +99,11 @@ const DatasetDetail = () => {
       try {
         setLoading(true);
         
-        // Fetch the database details
+        // Fetch the database details (schema)
         const datasetData = await fetchDatabase(id);
         setDataset(datasetData);
         
-        // Fetch questionnaires for this dataset
+        // Fetch questionnaires (tables) for this dataset (schema)
         const questionnairesData = await fetchQuestionnaires(id);
         setQuestionnaires(questionnairesData);
         
@@ -113,7 +111,7 @@ const DatasetDetail = () => {
         console.log("Questionnaires loaded:", questionnairesData.map(q => ({
           form: q.form.nomFormulaire,
           table: q.form.nomTable,
-          id: getQuestionnaireId(q)
+          id: getQuestionnaireId(q.form.nomTable, id)
         })));
         
         setLoading(false);
@@ -240,7 +238,7 @@ const DatasetDetail = () => {
 
   const renderQuestionnaires = () => {
     return questionnaires.map((questionnaire, index) => {
-      const questionnaireId = getQuestionnaireId(questionnaire);
+      const questionnaireId = getQuestionnaireId(questionnaire.form.nomTable, id || '');
       // Check if this questionnaire has any selected variables
       const selection = variableSelections.find(
         (s) => s.questionnaireId === questionnaireId
@@ -249,28 +247,50 @@ const DatasetDetail = () => {
 
       return (
         <div
-          key={questionnaireId}
-          className={`border rounded-lg p-5 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md ${
-            hasSelections ? "border-green-300 bg-green-50 hover:bg-green-100" : "border-gray-200 hover:border-blue-300 hover:bg-blue-50"
-          }`}
+          key={index}
           onClick={() => handleQuestionnaireClick(questionnaireId)}
+          className={`p-4 sm:p-6 border rounded-lg transition-all duration-200 cursor-pointer relative
+              ${
+                hasSelections
+                  ? "border-green-300 bg-green-50 shadow-md"
+                  : "border-gray-200 bg-white hover:border-blue-300 hover:shadow"
+              }`}
         >
-          <div className="flex justify-between items-start">
-            <h3 className="font-medium text-gray-800">
-              {`Questionnaire ${index + 1}: ${questionnaire.form.nomFormulaire}` || `Questionnaire ${questionnaireId}`}
+          <div className="flex justify-between">
+            <h3 className="text-lg font-semibold text-gray-800">
+              {questionnaire.form.nomFormulaire}
             </h3>
             {hasSelections && (
-              <Badge
-                variant="outline"
-                className="bg-green-100 border-green-300 text-green-800"
-              >
-                {selection?.selectedVariables.length} selected
+              <Badge variant="outline" className="bg-green-100 text-green-700">
+                {selection.selectedVariables.length} Variables Selected
               </Badge>
             )}
           </div>
-          <p className="mt-2 text-sm text-gray-500">
-            {questionnaire.form.nomTable || "No description available"}
+          <p className="mt-2 text-gray-600 text-sm">
+            {questionnaire.fields[0].length} variables available
           </p>
+          
+          {hasSelections && (
+            <div className="mt-3 p-2 bg-green-100 rounded text-sm text-green-800">
+              <p className="font-medium">Selected variables:</p>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {selection.selectedVariables.slice(0, 3).map((variable) => (
+                  <Badge
+                    key={variable.name}
+                    variant="outline"
+                    className="bg-white"
+                  >
+                    {variable.name}
+                  </Badge>
+                ))}
+                {selection.selectedVariables.length > 3 && (
+                  <Badge variant="outline" className="bg-white">
+                    +{selection.selectedVariables.length - 3} more
+                  </Badge>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       );
     });

@@ -5,13 +5,14 @@ import { Separator } from "./ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { ScrollArea } from "./ui/scroll-area";
-import { Questionnaire, fetchQuestionnaires } from "../lib/api";
+import { fetchQuestionnaires } from "../lib/api";
 
-interface QuestionnaireField {
-  description: string;
-  variable_name: string;
-  possible_answers: Record<string, string>;
-  data_type: string;
+interface ColumnField {
+  name: string;
+  type: string;
+  nullable: boolean;
+  primary_key: boolean;
+  default: string | null;
 }
 
 interface QuestionnaireVariablesProps {
@@ -26,10 +27,14 @@ interface QuestionnaireVariablesProps {
   initialSelections?: { name: string; description: string }[];
 }
 
-// Helper to get questionnaire identifier - must match the format in DatasetDetail
-const getQuestionnaireId = (questionnaire: Questionnaire): string => {
-  const formName = questionnaire.form.nomFormulaire;
-  return `${formName.replace(".json", "")}_${questionnaire.form.nomTable}`;
+// Helper to extract the table name from questionnaire ID
+const getTableNameFromId = (questionnaireId: string): string => {
+  // The questionnaire ID should be in the format: shortName_schema.tableName
+  const parts = questionnaireId.split('_');
+  if (parts.length > 1) {
+    return parts[parts.length - 1];
+  }
+  return questionnaireId;
 };
 
 const QuestionnaireVariables = ({
@@ -38,9 +43,7 @@ const QuestionnaireVariables = ({
   onSelectionChange,
   initialSelections = [],
 }: QuestionnaireVariablesProps) => {
-  const [questionnaire, setQuestionnaire] = useState<Questionnaire | null>(
-    null,
-  );
+  const [questionnaire, setQuestionnaire] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedVariables, setSelectedVariables] =
@@ -51,13 +54,13 @@ const QuestionnaireVariables = ({
       try {
         setLoading(true);
         
-        // Fetch all questionnaires for this dataset
+        // Fetch all questionnaires (tables) for this dataset (schema)
         const questionnaires = await fetchQuestionnaires(datasetId);
         
-        // Find the specific questionnaire we need using the consistent ID format
-        const found = questionnaires.find(q => {
-          return getQuestionnaireId(q) === questionnaireId;
-        });
+        // Find the specific questionnaire we need using the table name from the ID
+        const tableName = getTableNameFromId(questionnaireId);
+        
+        const found = questionnaires.find(q => q.form.nomTable === tableName);
         
         if (found) {
           setQuestionnaire(found);
@@ -132,8 +135,8 @@ const QuestionnaireVariables = ({
     );
   }
 
-  // Flatten the fields array for easier rendering
-  const flattenedFields = questionnaire.fields.flat();
+  // Get the flattened fields (columns) from the questionnaire
+  const columns = questionnaire.fields[0];
 
   return (
     <Card className="w-full bg-white">
@@ -144,7 +147,7 @@ const QuestionnaireVariables = ({
             <span className="text-xs font-normal text-gray-500 block mt-1">ID: {questionnaireId}</span>
           </CardTitle>
           <Badge variant="outline" className="bg-blue-50 text-blue-700">
-            {flattenedFields.length} variables
+            {columns.length} variables
           </Badge>
         </div>
         <p className="text-sm text-gray-500">
@@ -155,20 +158,20 @@ const QuestionnaireVariables = ({
       <CardContent className="pt-4">
         <ScrollArea className="h-[400px] sm:h-[600px] pr-4">
           <div className="space-y-3 sm:space-y-4">
-            {flattenedFields.map((field, index) => (
+            {columns.map((column: any, index: number) => (
               <div
                 key={index}
                 className="flex items-start space-x-3 p-3 hover:bg-blue-50 rounded-lg transition-colors duration-200 mb-2 border border-transparent hover:border-blue-100"
               >
                 <Checkbox
-                  id={`${questionnaire.form.nomFormulaire}-${field.variable_name}`}
+                  id={`${questionnaire.form.nomFormulaire}-${column.variable_name}`}
                   checked={selectedVariables.some(
-                    (variable) => variable.name === field.variable_name,
+                    (variable) => variable.name === column.variable_name,
                   )}
                   onCheckedChange={(checked) =>
                     handleVariableToggle(
-                      field.variable_name,
-                      field.description,
+                      column.variable_name,
+                      column.description,
                       !!checked,
                     )
                   }
@@ -176,32 +179,32 @@ const QuestionnaireVariables = ({
                 />
                 <div className="space-y-1 flex-1">
                   <Label
-                    htmlFor={`${questionnaire.form.nomFormulaire}-${field.variable_name}`}
+                    htmlFor={`${questionnaire.form.nomFormulaire}-${column.variable_name}`}
                     className="font-medium text-gray-700 cursor-pointer"
                   >
-                    {field.description}
+                    {column.description}
                   </Label>
                   <div className="flex flex-wrap gap-2">
                     <Badge variant="outline" className="text-xs bg-gray-50">
-                      {field.variable_name}
+                      {column.variable_name}
                     </Badge>
                     <Badge variant="outline" className="text-xs bg-gray-50">
-                      {field.data_type}
+                      {column.data_type}
                     </Badge>
+                    {column.primary_key && (
+                      <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700">
+                        Primary Key
+                      </Badge>
+                    )}
+                    {!column.nullable && (
+                      <Badge variant="outline" className="text-xs bg-red-50 text-red-700">
+                        Required
+                      </Badge>
+                    )}
                   </div>
-                  {Object.keys(field.possible_answers).length > 0 && (
+                  {column.default && (
                     <div className="mt-2 text-xs text-gray-500 bg-gray-50 p-2 rounded">
-                      <p className="font-medium mb-1">Possible answers:</p>
-                      <ul className="space-y-1 pl-2">
-                        {Object.entries(field.possible_answers).map(
-                          ([key, value]) => (
-                            <li key={key}>
-                              <span className="font-medium">{key}:</span>{" "}
-                              {value}
-                            </li>
-                          ),
-                        )}
-                      </ul>
+                      <p className="font-medium">Default: {column.default}</p>
                     </div>
                   )}
                 </div>
