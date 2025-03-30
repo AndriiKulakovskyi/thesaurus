@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { ScrollArea } from "./ui/scroll-area";
 import { fetchQuestionnaires } from "../lib/api";
+import { Input } from "./ui/input";
+import { Search } from "lucide-react";
 
 interface ColumnField {
   name: string;
@@ -48,6 +50,7 @@ const QuestionnaireVariables = ({
   const [error, setError] = useState<string | null>(null);
   const [selectedVariables, setSelectedVariables] =
     useState<{ name: string; description: string }[]>(initialSelections);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const loadQuestionnaire = async () => {
@@ -165,6 +168,73 @@ const QuestionnaireVariables = ({
 
   // Get the flattened fields (columns) from the questionnaire
   const columns = questionnaire.fields[0];
+  
+  // Filter columns based on search query
+  const filteredColumns = searchQuery.trim() === '' 
+    ? columns 
+    : columns.filter((column: any) => {
+        const searchLower = searchQuery.toLowerCase();
+        return (
+          column.variable_name.toLowerCase().includes(searchLower) ||
+          column.description.toLowerCase().includes(searchLower)
+        );
+      });
+
+  // Select all visible variables function
+  const handleSelectAllVisible = (select: boolean) => {
+    if (select) {
+      // Create a map of existing selected variables for faster lookup
+      const existingSelections = new Map(
+        selectedVariables.map(v => [v.name, v.description])
+      );
+      
+      // Add all filtered columns that aren't already selected
+      const newSelections = [...selectedVariables];
+      filteredColumns.forEach((column: any) => {
+        if (!existingSelections.has(column.variable_name)) {
+          newSelections.push({
+            name: column.variable_name,
+            description: column.description
+          });
+        }
+      });
+      
+      setSelectedVariables(newSelections);
+      
+      // Notify parent component of the change
+      onSelectionChange({
+        datasetId,
+        questionnaireId,
+        formName: questionnaire?.form.nomFormulaire || "",
+        selectedVariables: newSelections,
+      });
+    } else {
+      // Create a set of variable names that are currently filtered/visible
+      const filteredVariableNames = new Set(
+        filteredColumns.map((column: any) => column.variable_name)
+      );
+      
+      // Keep only variables that aren't in the filtered list
+      const newSelections = selectedVariables.filter(
+        variable => !filteredVariableNames.has(variable.name)
+      );
+      
+      setSelectedVariables(newSelections);
+      
+      // Notify parent component of the change
+      onSelectionChange({
+        datasetId,
+        questionnaireId,
+        formName: questionnaire?.form.nomFormulaire || "",
+        selectedVariables: newSelections,
+      });
+    }
+  };
+
+  const allVisibleSelected = filteredColumns.length > 0 && 
+    filteredColumns.every((column: any) => 
+      selectedVariables.some(v => v.name === column.variable_name)
+    );
 
   return (
     <Card className="w-full bg-white">
@@ -184,62 +254,100 @@ const QuestionnaireVariables = ({
       </CardHeader>
       <Separator />
       <CardContent className="pt-4">
-        <ScrollArea className="h-[400px] sm:h-[600px] pr-4">
-          <div className="space-y-3 sm:space-y-4">
-            {columns.map((column: any, index: number) => (
-              <div
-                key={index}
-                className="flex items-start space-x-3 p-3 hover:bg-blue-50 rounded-lg transition-colors duration-200 mb-2 border border-transparent hover:border-blue-100"
-              >
-                <Checkbox
-                  id={`${questionnaire.form.nomFormulaire}-${column.variable_name}`}
-                  checked={selectedVariables.some(
-                    (variable) => variable.name === column.variable_name,
-                  )}
-                  onCheckedChange={(checked) =>
-                    handleVariableToggle(
-                      column.variable_name,
-                      column.description,
-                      !!checked,
-                    )
-                  }
-                  className="h-4 w-4 sm:h-5 sm:w-5"
-                />
-                <div className="space-y-1 flex-1">
-                  <Label
-                    htmlFor={`${questionnaire.form.nomFormulaire}-${column.variable_name}`}
-                    className="font-medium text-gray-700 cursor-pointer"
+        <div className="mb-4 flex items-center space-x-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search variables..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8"
+            />
+            {searchQuery && (
+              <Badge className="absolute right-2 top-2 bg-blue-100 text-blue-800 font-medium">
+                {filteredColumns.length} results
+              </Badge>
+            )}
+          </div>
+          <div className="flex items-center">
+            <Checkbox 
+              id="select-all" 
+              checked={allVisibleSelected} 
+              onCheckedChange={(checked) => handleSelectAllVisible(!!checked)} 
+              className="h-4 w-4 mr-2"
+            />
+            <Label htmlFor="select-all" className="text-sm cursor-pointer whitespace-nowrap">
+              {allVisibleSelected ? "Deselect all" : "Select all"}
+            </Label>
+          </div>
+        </div>
+
+        <div className="mb-2 flex justify-between items-center">
+          <div className="text-sm text-gray-500">
+            <Badge variant="outline" className="mr-2 font-normal">
+              {selectedVariables.length} selected
+            </Badge>
+            of {columns.length} total variables
+          </div>
+        </div>
+
+        {filteredColumns.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">
+            <p>No variables match your search</p>
+          </div>
+        ) : (
+          <ScrollArea className="h-[400px] sm:h-[500px] pr-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1">
+              {filteredColumns.map((column: any, index: number) => {
+                const isSelected = selectedVariables.some(
+                  (variable) => variable.name === column.variable_name
+                );
+                return (
+                  <div
+                    key={index}
+                    className={`flex items-center py-1.5 px-3 rounded-md transition-colors duration-200 ${
+                      isSelected 
+                        ? "bg-blue-50 border border-blue-200" 
+                        : "hover:bg-gray-50 border border-transparent"
+                    }`}
                   >
-                    {column.description}
-                  </Label>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="text-xs bg-gray-50">
-                      {column.variable_name}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs bg-gray-50">
-                      {column.data_type}
-                    </Badge>
+                    <Checkbox
+                      id={`${questionnaire.form.nomFormulaire}-${column.variable_name}`}
+                      checked={isSelected}
+                      onCheckedChange={(checked) =>
+                        handleVariableToggle(
+                          column.variable_name,
+                          column.description,
+                          !!checked,
+                        )
+                      }
+                      className="h-4 w-4 mr-2"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <Label
+                        htmlFor={`${questionnaire.form.nomFormulaire}-${column.variable_name}`}
+                        className={`text-sm font-medium cursor-pointer truncate block ${
+                          isSelected ? "text-blue-700" : "text-gray-700"
+                        }`}
+                        title={column.description}
+                      >
+                        {column.description}
+                      </Label>
+                      <p className="text-xs text-gray-500 truncate" title={column.variable_name}>
+                        {column.variable_name}
+                      </p>
+                    </div>
                     {column.primary_key && (
-                      <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700">
-                        Primary Key
-                      </Badge>
-                    )}
-                    {!column.nullable && (
-                      <Badge variant="outline" className="text-xs bg-red-50 text-red-700">
-                        Required
+                      <Badge variant="outline" className="ml-1 text-xs px-1 py-0 h-4 bg-amber-50 text-amber-700">
+                        PK
                       </Badge>
                     )}
                   </div>
-                  {column.default && (
-                    <div className="mt-2 text-xs text-gray-500 bg-gray-50 p-2 rounded">
-                      <p className="font-medium">Default: {column.default}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
+                );
+              })}
+            </div>
+          </ScrollArea>
+        )}
       </CardContent>
     </Card>
   );
