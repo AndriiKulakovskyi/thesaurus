@@ -363,7 +363,11 @@ const DatasetDetail = () => {
       {activeTab === "questionnaires" && totalSelectedVariables > 0 && (
         <FloatingSelectionIndicator
           count={totalSelectedVariables}
-          onClick={() => setActiveTab("variables")}
+          onClick={() => {
+            // Clear any selected questionnaire when showing the summary
+            setSelectedQuestionnaire(null);
+            setActiveTab("variables");
+          }}
         />
       )}
       <div className="sticky top-0 z-10 bg-gray-50 py-2 mb-2 sm:mb-4">
@@ -468,7 +472,11 @@ const DatasetDetail = () => {
                   <div className="flex justify-end mt-6">
                     <Button
                       className="bg-green-600 hover:bg-green-700"
-                      onClick={() => setActiveTab("variables")}
+                      onClick={() => {
+                        // Clear any selected questionnaire when showing the summary
+                        setSelectedQuestionnaire(null);
+                        setActiveTab("variables");
+                      }}
                     >
                       <Check className="h-4 w-4 mr-2" />
                       Review Selected Variables ({totalSelectedVariables})
