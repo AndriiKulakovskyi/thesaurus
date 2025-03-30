@@ -186,31 +186,53 @@ const DatasetDetail = () => {
     // Show loading state
     setSubmitting(true);
     
-    // Convert component selections to API format
-    const apiSelections: ApiVariableSelection[] = variableSelections.map(selection => ({
-      questionnaireId: selection.questionnaireId,
-      variables: selection.selectedVariables.map(v => v.name)
-    }));
-    
-    // Create the request object
-    const extractionRequest: ExtractionRequest = {
-      datasetId: dataset.id,
-      selections: apiSelections
-    };
-    
     try {
+      // Convert component selections to API format
+      const apiSelections: ApiVariableSelection[] = variableSelections.map(selection => ({
+        questionnaireId: selection.questionnaireId,
+        variables: selection.selectedVariables.map(v => v.name)
+      }));
+      
+      // Create the request object
+      const extractionRequest: ExtractionRequest = {
+        datasetId: dataset.id,
+        selections: apiSelections
+      };
+      
+      // Show preparing message
+      toast({
+        title: "Preparing data extraction",
+        description: "We're processing your request. This might take a moment...",
+        duration: 3000,
+      });
+      
       // Send the extraction request to the API
       const response = await submitExtraction(extractionRequest);
       
-      // Show success message
-      toast({
-        title: "Data extraction successful",
-        description: `${response.total_variables} variables extracted from ${response.selections_count} questionnaires.`,
-        duration: 5000,
-      });
-      
-      // Could navigate to a success page or download page here
-      // navigate('/extract/success', { state: { response } });
+      // Check response status for different types of results
+      if (response.status === "warning") {
+        // Warning means extraction completed but with issues
+        toast({
+          title: "Extraction completed with warnings",
+          description: response.message,
+          variant: "default",
+          duration: 10000,
+        });
+      } else if (response.status === "success") {
+        // Success with downloaded data
+        toast({
+          title: "Data extraction successful",
+          description: `${response.total_variables} variables from ${response.selections_count} questionnaires have been extracted. Your download should start automatically.`,
+          duration: 8000,
+        });
+      } else {
+        // Unknown status
+        toast({
+          title: "Data extraction completed",
+          description: response.message,
+          duration: 5000,
+        });
+      }
       
     } catch (err) {
       // Show error message

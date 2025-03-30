@@ -127,14 +127,88 @@ export async function fetchQuestionnaires(datasetId: string): Promise<any[]> {
 }
 
 export async function submitExtraction(request: ExtractionRequest): Promise<ExtractionResponse> {
-  // This will need to be implemented on the backend
-  // For now, return a mock response
-  return {
-    status: "success",
-    message: "Data extraction completed successfully",
-    request: request,
-    dataset: request.datasetId,
-    selections_count: request.selections.length,
-    total_variables: request.selections.reduce((total, selection) => total + selection.variables.length, 0)
-  };
+  try {
+    // Use the extract endpoint we created in the backend
+    const response = await fetch(`${API_BASE_URL}/extract`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    
+    if (!response.ok) {
+      // Try to parse error response
+      const errorData = await response.json().catch(() => null);
+      throw new Error(errorData?.detail || `Extraction request failed: ${response.statusText}`);
+    }
+    
+    // Check if the response is a file
+    const contentType = response.headers.get('content-type');
+    const contentDisposition = response.headers.get('content-disposition');
+    
+    if (contentType && contentType.includes('text/csv')) {
+      // Get the blob from the response
+      const blob = await response.blob();
+      
+      // Check if the blob is not empty (more than just headers)
+      // A typical empty CSV with just a header row would be very small
+      if (blob.size < 50) {
+        // The file is likely empty or just has headers
+        // Read the file content to check for diagnostic information
+        const text = await blob.text();
+        
+        if (text.includes("No data found")) {
+          return {
+            status: "warning",
+            message: "No data was found for your selected variables. This could be because the tables are empty or the selected columns don't contain data.",
+            request: request,
+            dataset: request.datasetId,
+            selections_count: request.selections.length,
+            total_variables: request.selections.reduce((total, selection) => total + selection.variables.length, 0)
+          };
+        }
+      }
+      
+      // Get filename from content-disposition if available
+      let filename = `extracted_data_${request.datasetId}.csv`;
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1];
+        }
+      }
+      
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = filename;
+      
+      // Trigger download
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      // Return a success response
+      return {
+        status: "success",
+        message: "Data extraction completed successfully. Your download should start automatically.",
+        request: request,
+        dataset: request.datasetId,
+        selections_count: request.selections.length,
+        total_variables: request.selections.reduce((total, selection) => total + selection.variables.length, 0)
+      };
+    } else {
+      // If not a file, try to parse the JSON response
+      return await response.json();
+    }
+  } catch (error) {
+    console.error("Error during extraction:", error);
+    throw error;
+  }
 } 

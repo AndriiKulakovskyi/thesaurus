@@ -136,6 +136,17 @@ const VariableSelectionSummary = ({
                 )}
               </Button>
             </div>
+            
+            <div className="mt-4 p-3 bg-blue-50 rounded-md border border-blue-100 text-sm text-blue-800">
+              <p className="font-medium mb-1">What happens next?</p>
+              <p>When you click "Request Data", the system will:</p>
+              <ol className="list-decimal ml-5 mt-1 space-y-1">
+                <li>Extract the selected variables from the database</li>
+                <li>Combine data from all selected questionnaires</li>
+                <li>Generate a CSV file with your extracted data</li>
+                <li>Start the download automatically</li>
+              </ol>
+            </div>
           </>
         )}
       </CardContent>
