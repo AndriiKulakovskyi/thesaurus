@@ -8,6 +8,8 @@ import {
   Check,
   X,
   ChevronLeft,
+  Microscope,
+  User,
 } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { Badge } from "./ui/badge";
@@ -402,29 +404,26 @@ const DatasetDetail = () => {
             </p>
             
             {dataset?.metadata && (
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="mt-4 flex flex-wrap gap-3">
                 {dataset.metadata.study_type && (
-                  <div className="flex items-start gap-2">
-                    <span className="text-blue-600 font-medium">Study Type:</span>
-                    <span>{dataset.metadata.study_type}</span>
-                  </div>
-                )}
-                {dataset.metadata.year_started && (
-                  <div className="flex items-start gap-2">
-                    <span className="text-blue-600 font-medium">Started:</span>
-                    <span>{dataset.metadata.year_started}</span>
+                  <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full">
+                    <Microscope className="h-4 w-4" />
+                    <span className="text-sm font-medium">
+                      {dataset.metadata.study_type}
+                      {dataset.metadata.year_started ? ` (${dataset.metadata.year_started})` : ''}
+                    </span>
                   </div>
                 )}
                 {dataset.metadata.principal_investigator && (
-                  <div className="flex items-start gap-2">
-                    <span className="text-blue-600 font-medium">Principal Investigator:</span>
-                    <span>{dataset.metadata.principal_investigator}</span>
+                  <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-1.5 rounded-full">
+                    <User className="h-4 w-4" />
+                    <span className="text-sm font-medium">{dataset.metadata.principal_investigator}</span>
                   </div>
                 )}
                 {dataset.metadata.patient_count && (
-                  <div className="flex items-start gap-2">
-                    <span className="text-blue-600 font-medium">Patient Count:</span>
-                    <span>{dataset.metadata.patient_count}</span>
+                  <div className="flex items-center gap-2 bg-purple-50 text-purple-700 px-3 py-1.5 rounded-full">
+                    <DatabaseIcon className="h-4 w-4" />
+                    <span className="text-sm font-medium">{dataset.metadata.patient_count} patients</span>
                   </div>
                 )}
               </div>
