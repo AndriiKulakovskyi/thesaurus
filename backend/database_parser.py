@@ -32,6 +32,25 @@ class DatabaseInspector:
         self.inspector = None
         self.schemas = []
         self.analysis_results = None
+        self.db_metadata = self._load_db_metadata()
+
+    def _load_db_metadata(self):
+        """
+        Loads database metadata from the YAML configuration file.
+        """
+        metadata_path = os.path.join(os.path.dirname(__file__), 'config', 'databases.yaml')
+        try:
+            if os.path.exists(metadata_path):
+                with open(metadata_path, 'r') as file:
+                    metadata = yaml.safe_load(file)
+                logging.info(f"Database metadata loaded from {metadata_path}")
+                return metadata
+            else:
+                logging.warning(f"Database metadata file not found at {metadata_path}")
+                return {}
+        except Exception as e:
+            logging.error(f"Error loading database metadata: {e}")
+            return {}
 
     def connect(self):
         """
@@ -65,6 +84,31 @@ class DatabaseInspector:
         except SQLAlchemyError as e:
             logging.error(f"Error retrieving schemas: {e}")
             return []
+            
+    def get_schemas_with_metadata(self):
+        """
+        Retrieves all available schemas with their human-readable metadata.
+        """
+        schemas = self.get_schemas()
+        enriched_schemas = []
+        
+        for schema in schemas:
+            schema_data = {
+                "id": schema,
+                "title": schema,
+                "description": f"Clinical dataset for {schema} study",
+                "metadata": {}
+            }
+            
+            # Enrich with metadata from YAML if available
+            if schema in self.db_metadata:
+                schema_data["title"] = self.db_metadata[schema].get("name", schema)
+                schema_data["description"] = self.db_metadata[schema].get("description", schema_data["description"])
+                schema_data["metadata"] = self.db_metadata[schema].get("metadata", {})
+            
+            enriched_schemas.append(schema_data)
+            
+        return enriched_schemas
 
     def analyze_database(self):
         """
@@ -99,12 +143,25 @@ class DatabaseInspector:
                 schema_tables = {name: table for name, table in self.metadata.tables.items() 
                                if name.startswith(f"{schema}.")}
                 
-                analysis['schemas'][schema] = {
+                # Basic schema info
+                schema_info = {
                     'tables': {},
                     'total_tables': len(schema_tables),
                     'total_columns': 0
                 }
-
+                
+                # Add metadata from YAML if available
+                if schema in self.db_metadata:
+                    schema_info['title'] = self.db_metadata[schema].get('name', schema)
+                    schema_info['description'] = self.db_metadata[schema].get('description', f"Clinical dataset for {schema} study")
+                    schema_info['metadata'] = self.db_metadata[schema].get('metadata', {})
+                else:
+                    schema_info['title'] = schema
+                    schema_info['description'] = f"Clinical dataset for {schema} study"
+                    schema_info['metadata'] = {}
+                
+                analysis['schemas'][schema] = schema_info
+                
                 # Analyze each table in the schema
                 for table_name, table in schema_tables.items():
                     table_info = {

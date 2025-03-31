@@ -381,7 +381,94 @@ const DatasetDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-3 sm:p-4 md:p-6 pb-20">
+    <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 flex flex-col gap-4">
+      <BreadcrumbNav
+        items={[{ label: "Home", href: "/" }, { label: dataset?.title || "Dataset" }]}
+      />
+
+      <div className="p-6 rounded-xl border border-gray-100 bg-white mb-4">
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex-grow">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-2">
+              <DatabaseIcon className="h-6 w-6 md:h-8 md:w-8 text-blue-500" />
+              {dataset ? dataset.title : <Skeleton className="h-8 w-64" />}
+            </h1>
+            <p className="mt-2 text-gray-600">
+              {dataset ? (
+                dataset.description
+              ) : (
+                <Skeleton className="h-4 w-full max-w-lg" />
+              )}
+            </p>
+            
+            {dataset?.metadata && (
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                {dataset.metadata.study_type && (
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-600 font-medium">Study Type:</span>
+                    <span>{dataset.metadata.study_type}</span>
+                  </div>
+                )}
+                {dataset.metadata.year_started && (
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-600 font-medium">Started:</span>
+                    <span>{dataset.metadata.year_started}</span>
+                  </div>
+                )}
+                {dataset.metadata.principal_investigator && (
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-600 font-medium">Principal Investigator:</span>
+                    <span>{dataset.metadata.principal_investigator}</span>
+                  </div>
+                )}
+                {dataset.metadata.patient_count && (
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-600 font-medium">Patient Count:</span>
+                    <span>{dataset.metadata.patient_count}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="md:w-64 flex flex-col gap-4">
+            <div className="flex flex-col gap-2 p-4 rounded-lg bg-gray-50">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 font-medium">Records:</span>
+                <span className="font-bold text-blue-600">
+                  {dataset ? (
+                    dataset.record_count
+                  ) : (
+                    <Skeleton className="h-4 w-12" />
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600 font-medium">
+                  Last Updated:
+                </span>
+                <span className="text-gray-800">
+                  {dataset ? (
+                    new Date(dataset.last_updated).toLocaleDateString()
+                  ) : (
+                    <Skeleton className="h-4 w-24" />
+                  )}
+                </span>
+              </div>
+            </div>
+            
+            <Button
+              variant="outline"
+              className="w-full justify-center"
+              onClick={handleBackClick}
+            >
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              Back to Datasets
+            </Button>
+          </div>
+        </div>
+      </div>
+
       {activeTab === "questionnaires" && totalSelectedVariables > 0 && (
         <FloatingSelectionIndicator
           count={totalSelectedVariables}

@@ -7,6 +7,13 @@ export interface Database {
   description: string;
   record_count: number;
   last_updated: string;
+  metadata?: {
+    study_type?: string;
+    year_started?: number;
+    principal_investigator?: string;
+    patient_count?: number;
+    [key: string]: any;
+  };
 }
 
 export interface SchemaTable {
@@ -34,6 +41,15 @@ export interface Schema {
   tables: Record<string, SchemaTable>;
   total_tables: number;
   total_columns: number;
+  title?: string;
+  description?: string;
+  metadata?: {
+    study_type?: string;
+    year_started?: number;
+    principal_investigator?: string;
+    patient_count?: number;
+    [key: string]: any;
+  };
 }
 
 export interface VariableSelection {
@@ -57,21 +73,21 @@ export interface ExtractionResponse {
 
 // Adapted API functions to match backend
 export async function fetchDatabases(): Promise<Database[]> {
-  // Fetch all available schemas - these are the "databases" in our context
-  const response = await fetch(`${API_BASE_URL}/schemas`);
+  // Fetch all available schemas with metadata
+  const response = await fetch(`${API_BASE_URL}/schemas-with-metadata`);
   if (!response.ok) {
     throw new Error(`Failed to fetch schemas: ${response.statusText}`);
   }
-  const schemas = await response.json() as string[];
+  const schemasWithMetadata = await response.json() as any[];
   
-  // Transform schema names into our Database interface
-  // We'll get additional details when the specific schema is selected
-  return schemas.map(schema => ({
-    id: schema,
-    title: schema,
-    description: `Clinical dataset for ${schema} study`,
-    record_count: 0, // Will be populated on detail view
-    last_updated: new Date().toISOString() // Use current date as placeholder
+  // Transform metadata into our Database interface
+  return schemasWithMetadata.map(schema => ({
+    id: schema.id,
+    title: schema.title,
+    description: schema.description,
+    record_count: schema.metadata.patient_count || 0,
+    last_updated: new Date().toISOString(),
+    metadata: schema.metadata
   }));
 }
 
@@ -87,10 +103,11 @@ export async function fetchDatabase(datasetId: string): Promise<Database> {
   // Create database object from schema data
   return {
     id: datasetId,
-    title: datasetId,
-    description: `Clinical dataset containing ${schemaData.total_tables} questionnaires with ${schemaData.total_columns} variables`,
-    record_count: schemaData.total_tables,
-    last_updated: new Date().toISOString()
+    title: schemaData.title || datasetId,
+    description: schemaData.description || `Clinical dataset containing ${schemaData.total_tables} questionnaires with ${schemaData.total_columns} variables`,
+    record_count: schemaData.metadata?.patient_count || schemaData.total_tables,
+    last_updated: new Date().toISOString(),
+    metadata: schemaData.metadata
   };
 }
 

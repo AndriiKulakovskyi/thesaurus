@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Badge } from "./ui/badge";
-import { Calendar, Database } from "lucide-react";
+import { Calendar, Database, User, Microscope } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -18,6 +18,13 @@ interface DatasetCardProps {
   description: string;
   recordCount: number;
   lastUpdated: string;
+  metadata?: {
+    study_type?: string;
+    year_started?: number;
+    principal_investigator?: string;
+    patient_count?: number;
+    [key: string]: any;
+  };
   onClick?: (id: string) => void;
 }
 
@@ -27,6 +34,7 @@ const DatasetCard = ({
   description = "Structured clinical data including DSM diagnoses, mood ratings, and pharmacotherapy records.",
   recordCount = 250,
   lastUpdated = "2023-10-12",
+  metadata = {},
   onClick,
 }: DatasetCardProps) => {
   const navigate = useNavigate();
@@ -60,6 +68,18 @@ const DatasetCard = ({
         <CardDescription className="text-gray-500">
           {description}
         </CardDescription>
+        {metadata?.study_type && (
+          <div className="mt-2 flex items-center text-xs text-gray-600">
+            <Microscope className="h-3 w-3 mr-1" />
+            {metadata.study_type}{metadata.year_started ? ` (${metadata.year_started})` : ''}
+          </div>
+        )}
+        {metadata?.principal_investigator && (
+          <div className="mt-1 flex items-center text-xs text-gray-600">
+            <User className="h-3 w-3 mr-1" />
+            {metadata.principal_investigator}
+          </div>
+        )}
       </CardHeader>
       <CardContent className="w-1/4 flex items-center justify-center">
         <Database className="h-8 w-8 text-blue-500" />

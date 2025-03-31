@@ -53,6 +53,16 @@ async def get_schemas():
         logger.error(f"Error fetching schemas: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/schemas-with-metadata", response_model=List[Dict[str, Any]])
+async def get_schemas_with_metadata():
+    """Get all available database schemas with their metadata."""
+    try:
+        enriched_schemas = db_inspector.get_schemas_with_metadata()
+        return enriched_schemas
+    except Exception as e:
+        logger.error(f"Error fetching schemas with metadata: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/schemas/{schema}/tables", response_model=Dict[str, Any])
 async def get_schema_tables(schema: str):
     """Get all tables and their details for a specific schema."""

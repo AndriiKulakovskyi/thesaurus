@@ -1,0 +1,46 @@
+# Database schema mappings to human-readable names and descriptions
+# 
+# Format:
+# schema_name:
+#   name: "Human-readable name"
+#   description: "Detailed description of the database/study"
+#   metadata:
+#     study_type: "Type of study"
+#     year_started: Year started
+#     principal_investigator: "Name of PI"
+
+"_prod_thesaurus_face_asp":
+  name: "Asperger"
+  description: "Database for autism spectrum disorder study focusing on individuals with Asperger's syndrome"
+  metadata:
+    study_type: "Longitudinal Cohort Study"
+    year_started: 2018
+    principal_investigator: "Dr. Emily Chen"
+    patient_count: 742
+
+"_prod_thesaurus_face_bp":
+  name: "Bipolarity"
+  description: "Comprehensive database for bipolar disorders study examining mood cycles and treatment efficacy"
+  metadata:
+    study_type: "Clinical Trial"
+    year_started: 2019
+    principal_investigator: "Dr. Michael Rodriguez"
+    patient_count: 895
+
+"_prod_thesaurus_face_dr":
+  name: "Depression"
+  description: "Database for major depressive disorder research tracking symptom severity and treatment outcomes"
+  metadata:
+    study_type: "Observational Study"
+    year_started: 2017
+    principal_investigator: "Dr. Sarah Johnson"
+    patient_count: 1203
+
+"_prod_thesaurus_face_sz":
+  name: "Schizophrenia"
+  description: "Comprehensive database for schizophrenia research examining cognitive function and treatment response"
+  metadata:
+    study_type: "Randomized Controlled Trial"
+    year_started: 2020
+    principal_investigator: "Dr. Robert Williams"
+    patient_count: 683 
