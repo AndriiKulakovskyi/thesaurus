@@ -39,11 +39,12 @@ interface ComponentVariableSelection {
 
 // Helper to get questionnaire identifier
 const getQuestionnaireId = (tableName: string, schemaName: string): string => {
-  // Create a unique ID based on the schema and table name
-  // Extract the short table name (without schema) to use as prefix
-  const shortTableName = tableName.includes('.') ? tableName.split('.')[1] : tableName;
-  // Create ID format that matches our parsing logic: shortTableName_fullTableName
-  return `${shortTableName}_${tableName}`;
+  // If table name includes schema (e.g. "schema.table"), just extract the table part
+  if (tableName.includes('.')) {
+    return tableName.split('.')[1];
+  }
+  // Otherwise just return the table name as is
+  return tableName;
 };
 
 const DatasetDetail = () => {

@@ -71,82 +71,141 @@ export interface ExtractionResponse {
   total_variables: number;
 }
 
-// Adapted API functions to match backend
+// V1 API interfaces
+export interface StudyInfo {
+  schema: string;
+  name: string;
+  description: string;
+  metadata: {
+    study_type: string;
+    year_started: number;
+    principal_investigator: string;
+    patient_count: number;
+  };
+}
+
+export interface TableInfo {
+  name: string;
+  description: string;
+  columns: string[];
+}
+
+// Adapted API functions to use V1 endpoints
 export async function fetchDatabases(): Promise<Database[]> {
-  // Fetch all available schemas with metadata
-  const response = await fetch(`${API_BASE_URL}/schemas-with-metadata`);
+  // Fetch all available studies from V1 API
+  const response = await fetch(`${API_BASE_URL}/api/v1/studies`);
   if (!response.ok) {
-    throw new Error(`Failed to fetch schemas: ${response.statusText}`);
+    throw new Error(`Failed to fetch studies: ${response.statusText}`);
   }
-  const schemasWithMetadata = await response.json() as any[];
+  const studies = await response.json() as StudyInfo[];
   
-  // Transform metadata into our Database interface
-  return schemasWithMetadata.map(schema => ({
-    id: schema.id,
-    title: schema.title,
-    description: schema.description,
-    record_count: schema.metadata.patient_count || 0,
+  // Transform study info into our Database interface
+  return studies.map(study => ({
+    id: study.schema,
+    title: study.name,
+    description: study.description,
+    record_count: study.metadata.patient_count || 0,
     last_updated: new Date().toISOString(),
-    metadata: schema.metadata
+    metadata: study.metadata
   }));
 }
 
 export async function fetchDatabase(datasetId: string): Promise<Database> {
-  // Get the schema summary
-  const response = await fetch(`${API_BASE_URL}/schemas/${datasetId}/tables`);
+  // Get study info from V1 API
+  const response = await fetch(`${API_BASE_URL}/api/v1/studies`);
   if (!response.ok) {
-    throw new Error(`Failed to fetch schema ${datasetId}: ${response.statusText}`);
+    throw new Error(`Failed to fetch studies: ${response.statusText}`);
   }
   
-  const schemaData = await response.json() as Schema;
+  const studies = await response.json() as StudyInfo[];
+  const study = studies.find(s => s.schema === datasetId);
   
-  // Create database object from schema data
+  if (!study) {
+    throw new Error(`Study with ID ${datasetId} not found`);
+  }
+  
+  // Get table count for this schema
+  const tablesResponse = await fetch(`${API_BASE_URL}/api/v1/studies/${datasetId}/tables`);
+  if (!tablesResponse.ok) {
+    throw new Error(`Failed to fetch tables for ${datasetId}: ${tablesResponse.statusText}`);
+  }
+  
+  const tables = await tablesResponse.json() as TableInfo[];
+  
+  // Create database object from study and tables data
   return {
     id: datasetId,
-    title: schemaData.title || datasetId,
-    description: schemaData.description || `Clinical dataset containing ${schemaData.total_tables} questionnaires with ${schemaData.total_columns} variables`,
-    record_count: schemaData.metadata?.patient_count || schemaData.total_tables,
+    title: study.name,
+    description: study.description,
+    record_count: study.metadata.patient_count || 0,
     last_updated: new Date().toISOString(),
-    metadata: schemaData.metadata
+    metadata: study.metadata
   };
 }
 
 export async function fetchQuestionnaires(datasetId: string): Promise<any[]> {
-  // Get the tables (questionnaires) for this schema
-  const response = await fetch(`${API_BASE_URL}/schemas/${datasetId}/tables`);
+  // Get tables from V1 API
+  const response = await fetch(`${API_BASE_URL}/api/v1/studies/${datasetId}/tables`);
   if (!response.ok) {
-    throw new Error(`Failed to fetch questionnaires for dataset ${datasetId}: ${response.statusText}`);
+    throw new Error(`Failed to fetch tables for ${datasetId}: ${response.statusText}`);
   }
   
-  const schemaData = await response.json() as Schema;
+  const tables = await response.json() as TableInfo[];
   
-  // Transform schema tables into questionnaire format
-  return Object.entries(schemaData.tables).map(([tableName, tableData]) => {
-    // Parse the full table name to get just the table name without schema prefix
-    const shortTableName = tableName.split('.')[1] || tableName;
+  // Transform tables into questionnaire format
+  return Promise.all(tables.map(async (table) => {
+    // Fetch columns for this table
+    const columnsResponse = await fetch(`${API_BASE_URL}/api/v1/studies/${datasetId}/tables/${table.name}/columns`);
+    if (!columnsResponse.ok) {
+      throw new Error(`Failed to fetch columns for ${table.name}: ${columnsResponse.statusText}`);
+    }
     
-    // Format the data to match our frontend's expected structure
+    const columnsData = await columnsResponse.json();
+    const columns = columnsData.columns || [];
+    
+    // Format the data to match frontend expected structure
     return {
       form: {
-        nomFormulaire: shortTableName,
-        nomTable: tableName
+        nomFormulaire: table.name,
+        nomTable: `${datasetId}.${table.name}`
       },
       fields: [
-        tableData.columns.map(column => ({
-          description: column.name,
-          variable_name: column.name,
-          data_type: column.type,
+        columns.map(column => ({
+          description: column,
+          variable_name: column,
+          data_type: "string", // Default to string since we don't have type info
           possible_answers: {}
         }))
       ]
     };
-  });
+  }));
 }
 
 export async function submitExtraction(request: ExtractionRequest): Promise<ExtractionResponse> {
   try {
-    // Use the extract endpoint we created in the backend
-    const response = await fetch(`${API_BASE_URL}/extract`, {
+    console.log("Submitting extraction request:", request);
+    
+    // Validate the request structure
+    if (!request.datasetId) {
+      throw new Error("Missing datasetId in extraction request");
+    }
+    
+    if (!request.selections || !Array.isArray(request.selections)) {
+      throw new Error("Missing or invalid selections in extraction request");
+    }
+    
+    // Verify the selections have the required fields
+    request.selections.forEach((selection, index) => {
+      if (!selection.questionnaireId) {
+        throw new Error(`Missing questionnaireId in selection at index ${index}`);
+      }
+      if (!selection.variables || !Array.isArray(selection.variables)) {
+        throw new Error(`Missing or invalid variables in selection at index ${index}`);
+      }
+    });
+    
+    // Use the V1 extract endpoint
+    const response = await fetch(`${API_BASE_URL}/api/v1/extract`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -157,6 +216,7 @@ export async function submitExtraction(request: ExtractionRequest): Promise<Extr
     if (!response.ok) {
       // Try to parse error response
       const errorData = await response.json().catch(() => null);
+      console.error("Extraction API error:", errorData);
       throw new Error(errorData?.detail || `Extraction request failed: ${response.statusText}`);
     }
     
@@ -164,9 +224,16 @@ export async function submitExtraction(request: ExtractionRequest): Promise<Extr
     const contentType = response.headers.get('content-type');
     const contentDisposition = response.headers.get('content-disposition');
     
+    console.log("Response headers:", {
+      contentType,
+      contentDisposition
+    });
+    
     if (contentType && contentType.includes('text/csv')) {
       // Get the blob from the response
       const blob = await response.blob();
+      
+      console.log("Received CSV blob size:", blob.size);
       
       // Check if the blob is not empty (more than just headers)
       // A typical empty CSV with just a header row would be very small
@@ -174,6 +241,8 @@ export async function submitExtraction(request: ExtractionRequest): Promise<Extr
         // The file is likely empty or just has headers
         // Read the file content to check for diagnostic information
         const text = await blob.text();
+        
+        console.log("Empty CSV content:", text);
         
         if (text.includes("No data found")) {
           return {
@@ -211,6 +280,8 @@ export async function submitExtraction(request: ExtractionRequest): Promise<Extr
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
       
+      console.log("Download completed for:", filename);
+      
       // Return a success response
       return {
         status: "success",
@@ -222,7 +293,9 @@ export async function submitExtraction(request: ExtractionRequest): Promise<Extr
       };
     } else {
       // If not a file, try to parse the JSON response
-      return await response.json();
+      const jsonResponse = await response.json();
+      console.log("Received JSON response:", jsonResponse);
+      return jsonResponse;
     }
   } catch (error) {
     console.error("Error during extraction:", error);

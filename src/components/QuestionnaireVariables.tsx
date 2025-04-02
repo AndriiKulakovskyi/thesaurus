@@ -31,11 +31,8 @@ interface QuestionnaireVariablesProps {
 
 // Helper to extract the table name from questionnaire ID
 const getTableNameFromId = (questionnaireId: string): string => {
-  // The ID format is shortTableName_fullTableName, so we need to get everything after the first underscore
-  const firstUnderscoreIndex = questionnaireId.indexOf('_');
-  if (firstUnderscoreIndex !== -1 && firstUnderscoreIndex < questionnaireId.length - 1) {
-    return questionnaireId.substring(firstUnderscoreIndex + 1);
-  }
+  // With the updated getQuestionnaireId function in DatasetDetail,
+  // the questionnaireId should already be the correct table name
   return questionnaireId;
 };
 
