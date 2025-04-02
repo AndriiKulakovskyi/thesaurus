@@ -9,7 +9,7 @@
 #     year_started: Year started
 #     principal_investigator: "Name of PI"
 
-"_prod_thesaurus_face_asp":
+"_prod_clean_easperger":
   name: "Asperger"
   description: "Database for autism spectrum disorder study focusing on individuals with Asperger's syndrome"
   metadata:
@@ -18,7 +18,7 @@
     principal_investigator: "Dr. Emily Chen"
     patient_count: 742
 
-"_prod_thesaurus_face_bp":
+"_prod_clean_ebipolar":
   name: "Bipolarity"
   description: "Comprehensive database for bipolar disorders study examining mood cycles and treatment efficacy"
   metadata:
@@ -27,7 +27,7 @@
     principal_investigator: "Dr. Michael Rodriguez"
     patient_count: 895
 
-"_prod_thesaurus_face_dr":
+"_prod_clean_edepression":
   name: "Depression"
   description: "Database for major depressive disorder research tracking symptom severity and treatment outcomes"
   metadata:
@@ -36,7 +36,7 @@
     principal_investigator: "Dr. Sarah Johnson"
     patient_count: 1203
 
-"_prod_thesaurus_face_sz":
+"_prod_clean_eschizo":
   name: "Schizophrenia"
   description: "Comprehensive database for schizophrenia research examining cognitive function and treatment response"
   metadata:

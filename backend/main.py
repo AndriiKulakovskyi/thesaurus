@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from database_parser import DatabaseInspector
+from backend.database_parser import DatabaseInspector
 from typing import List, Dict, Any
 import logging
 from fastapi.responses import StreamingResponse
@@ -9,15 +9,45 @@ import io
 import csv
 import pandas as pd
 from sqlalchemy import inspect
+from dotenv import load_dotenv
+import os
+import sys
+from pathlib import Path
+from contextlib import asynccontextmanager
+
+# Add the parent directory to Python path
+sys.path.append(str(Path(__file__).parent.parent))
+
+from backend.api.endpoints import router as api_router
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 
+# Load environment variables
+load_dotenv()
+
+# Initialize database inspector
+db_inspector = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager for FastAPI application"""
+    global db_inspector
+    try:
+        db_inspector = DatabaseInspector()
+        db_inspector.connect()
+        logger.info("Database connection established successfully")
+        yield
+    finally:
+        # Add cleanup code here if needed
+        pass
+
 app = FastAPI(
-    title="Clinical Database API",
-    description="API for accessing clinical database schemas and metadata",
-    version="1.0.0"
+    title="Clinical Study Data API",
+    description="API for accessing clinical study data across multiple databases",
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # Configure CORS
@@ -28,20 +58,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Initialize database inspector
-db_inspector = None
-
-@app.on_event("startup")
-async def startup_event():
-    global db_inspector
-    try:
-        db_inspector = DatabaseInspector()
-        db_inspector.connect()
-        logger.info("Database connection established successfully")
-    except Exception as e:
-        logger.error(f"Failed to connect to database: {e}")
-        raise
 
 @app.get("/schemas", response_model=List[str])
 async def get_schemas():
@@ -283,6 +299,18 @@ async def extract_data(request: ExtractionRequest):
     except Exception as e:
         logger.error(f"Error extracting data: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+# Include API routes
+app.include_router(api_router)
+
+@app.get("/")
+async def root():
+    """Root endpoint"""
+    return {
+        "message": "Clinical Study Data API",
+        "version": "1.0.0",
+        "docs_url": "/docs"
+    }
 
 if __name__ == "__main__":
     import uvicorn

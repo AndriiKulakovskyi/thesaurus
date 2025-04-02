@@ -1,0 +1,20 @@
+Metadata-Version: 2.1
+Name: thesaurus-backend
+Version: 1.0.0
+Requires-Python: >=3.8
+Requires-Dist: fastapi
+Requires-Dist: uvicorn
+Requires-Dist: sqlalchemy
+Requires-Dist: pydantic
+Requires-Dist: python-dotenv
+Requires-Dist: pytest
+Requires-Dist: httpx
+Requires-Dist: pandas
+Requires-Dist: pyyaml
+Provides-Extra: test
+Requires-Dist: pytest>=7.0.0; extra == "test"
+Requires-Dist: pytest-asyncio>=0.20.0; extra == "test"
+Requires-Dist: pytest-cov>=4.0.0; extra == "test"
+Requires-Dist: aiohttp>=3.8.0; extra == "test"
+Requires-Dist: requests>=2.28.0; extra == "test"
+Requires-Dist: httpx>=0.24.0; extra == "test"
