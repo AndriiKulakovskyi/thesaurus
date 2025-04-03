@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends, Request
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 from backend.models.database import DatabaseManager
@@ -15,8 +15,13 @@ router = APIRouter(prefix="/api/v1")
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 
+# Function to get the database manager from the app state
+def get_db_manager(request: Request):
+    return request.app.state.db_manager
+
 # Initialize database manager
-db_manager = DatabaseManager(os.getenv('DATABASE_URL', ''))
+# This is now handled in main.py and injected via dependency
+# db_manager = DatabaseManager(os.getenv('DATABASE_URL', ''))
 
 class StudyMetadata(BaseModel):
     """Study metadata response model"""
@@ -64,7 +69,7 @@ class ExtractionRequest(BaseModel):
     include_metadata: Optional[bool] = False
 
 @router.get("/studies", response_model=List[StudyInfo])
-async def get_studies():
+async def get_studies(db_manager = Depends(get_db_manager)):
     """Get list of available studies"""
     try:
         studies = []
@@ -80,7 +85,7 @@ async def get_studies():
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/studies/{schema_name}/tables", response_model=List[TableInfo])
-async def get_study_tables(schema_name: str):
+async def get_study_tables(schema_name: str, db_manager = Depends(get_db_manager)):
     """Get list of tables (questionnaires) for a specific study"""
     try:
         models = db_manager.get_schema_models(schema_name)
@@ -100,7 +105,7 @@ async def get_study_tables(schema_name: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/studies/{schema_name}/tables/{table_name}/columns")
-async def get_table_columns(schema_name: str, table_name: str):
+async def get_table_columns(schema_name: str, table_name: str, db_manager = Depends(get_db_manager)):
     """Get available columns for a specific table"""
     try:
         columns = db_manager.get_table_columns(schema_name, table_name)
@@ -116,7 +121,7 @@ async def get_table_columns(schema_name: str, table_name: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/data", response_model=DataResponse)
-async def extract_data(request: DataRequest):
+async def extract_data(request: DataRequest, db_manager = Depends(get_db_manager)):
     """Extract data from multiple tables in a study"""
     try:
         # Validate schema exists
@@ -166,7 +171,7 @@ async def extract_data(request: DataRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/extract")
-async def extract_data_v1(request: ExtractionRequest):
+async def extract_data_v1(request: ExtractionRequest, db_manager = Depends(get_db_manager)):
     """
     Enhanced data extraction endpoint that supports the frontend format.
     Returns data in CSV format by default, with option for JSON.
@@ -203,9 +208,9 @@ async def extract_data_v1(request: ExtractionRequest):
             logger.info(f"Will extract {len(selection.variables)} variables from {table_name}")
         
         # Connect to database and extract data
-        # Create a connection through db_manager
-        engine = db_manager.engine
-        inspector = inspect(engine)
+        # Get engine from db_manager
+        engine = getattr(db_manager, 'engine', None)
+        inspector = inspect(engine) if engine else None
         
         # Initialize extraction statistics
         extraction_stats = {
@@ -217,7 +222,7 @@ async def extract_data_v1(request: ExtractionRequest):
         all_data = None
         
         # Get available schemas for debugging
-        schema_list = inspector.get_schema_names()
+        schema_list = inspector.get_schema_names() if inspector else []
         logger.info(f"Available schemas in database: {schema_list}")
         
         # Process each table and extract data
