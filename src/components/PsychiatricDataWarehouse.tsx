@@ -5,6 +5,7 @@ import ProjectsGrid from "./ProjectsGrid";
 import DatasetGrid from "./DatasetGrid";
 import { Separator } from "./ui/separator";
 import DataSelectionGuide from "./DataSelectionGuide";
+import CloudEnvironmentGrid from "./CloudEnvironmentGrid";
 
 const PsychiatricDataWarehouse = () => {
   const [activeTab, setActiveTab] = useState("projects");
@@ -36,9 +37,10 @@ const PsychiatricDataWarehouse = () => {
             onValueChange={setActiveTab}
             className="w-full mb-6"
           >
-            <TabsList className="grid w-full max-w-md grid-cols-2 mb-6">
+            <TabsList className="grid w-full max-w-md grid-cols-3 mb-6">
               <TabsTrigger value="projects">Research Projects</TabsTrigger>
               <TabsTrigger value="extraction">Data Extraction</TabsTrigger>
+              <TabsTrigger value="cloud">Cloud Environment</TabsTrigger>
             </TabsList>
 
             <TabsContent value="projects" className="w-full">
@@ -54,6 +56,10 @@ const PsychiatricDataWarehouse = () => {
                   <DatasetGrid />
                 </div>
               </div>
+            </TabsContent>
+
+            <TabsContent value="cloud" className="w-full">
+              <CloudEnvironmentGrid />
             </TabsContent>
           </Tabs>
         </div>
