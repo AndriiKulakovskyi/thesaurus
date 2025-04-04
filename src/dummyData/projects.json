@@ -1,0 +1,240 @@
+[
+  {
+    "id": "face-project",
+    "title": "FondaMental Advanced Centers of Expertise",
+    "description": "A network of expert centers dedicated to the assessment and care of patients with psychiatric disorders.",
+    "fullDescription": "The FondaMental Advanced Centers of Expertise (FACE) is a comprehensive network of specialized centers across France dedicated to improving the diagnosis, treatment, and research of major psychiatric disorders. The network collects standardized clinical, cognitive, and biological data from patients to advance personalized medicine approaches in psychiatry.",
+    "imageUrl": "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=800&q=80",
+    "institution": "Fondation FondaMental",
+    "principalInvestigator": "Dr. Marion Leboyer",
+    "lastUpdated": "2023-11-15",
+    "categories": ["Mood Disorders", "Schizophrenia", "Autism", "Bipolar Disorder"],
+    "objectives": "The FACE project aims to standardize assessment procedures across psychiatric centers, create a comprehensive database of patient data, and develop innovative diagnostic and therapeutic approaches based on biological markers and personalized medicine principles.",
+    "publications": [
+      {
+        "title": "The FondaMental Advanced Centers of Expertise: A Nationwide Network of Expert Centers for the Management of Bipolar Disorders",
+        "url": "https://example.com/publication1"
+      },
+      {
+        "title": "Personalized medicine approaches in bipolar disorder: The FACE cohort",
+        "url": "https://example.com/publication2"
+      }
+    ],
+    "statistics": [
+      {
+        "label": "Total Patients",
+        "value": 3523
+      },
+      {
+        "label": "Research Centers",
+        "value": 12
+      },
+      {
+        "label": "Publications",
+        "value": 87
+      },
+      {
+        "label": "Years Active",
+        "value": 15
+      }
+    ],
+    "fundingInfo": "Funded by the French National Research Agency (ANR), the Investissements d'Avenir program, and the Fondation FondaMental.",
+    "contactEmail": "contact@fondamental.org",
+    "datasets": [
+      {
+        "id": "_prod_clean_easperger",
+        "title": "Asperger",
+        "description": "Database for autism spectrum disorder study focusing on individuals with Asperger's syndrome",
+        "recordCount": 742,
+        "lastUpdated": "2023-10-12",
+        "metadata": {
+          "study_type": "Longitudinal Cohort Study",
+          "year_started": 2018,
+          "principal_investigator": "Dr. Emily Chen",
+          "patient_count": 742
+        }
+      },
+      {
+        "id": "_prod_clean_ebipolar",
+        "title": "Bipolarity",
+        "description": "Comprehensive database for bipolar disorders study examining mood cycles and treatment efficacy",
+        "recordCount": 895,
+        "lastUpdated": "2023-09-28",
+        "metadata": {
+          "study_type": "Clinical Trial",
+          "year_started": 2019,
+          "principal_investigator": "Dr. Michael Rodriguez",
+          "patient_count": 895
+        }
+      },
+      {
+        "id": "_prod_clean_edepression",
+        "title": "Depression",
+        "description": "Database for major depressive disorder research tracking symptom severity and treatment outcomes",
+        "recordCount": 1203,
+        "lastUpdated": "2023-11-05",
+        "metadata": {
+          "study_type": "Observational Study",
+          "year_started": 2017,
+          "principal_investigator": "Dr. Sarah Johnson",
+          "patient_count": 1203
+        }
+      },
+      {
+        "id": "_prod_clean_eschizo",
+        "title": "Schizophrenia",
+        "description": "Comprehensive database for schizophrenia research examining cognitive function and treatment response",
+        "recordCount": 683,
+        "lastUpdated": "2023-10-20",
+        "metadata": {
+          "study_type": "Randomized Controlled Trial",
+          "year_started": 2020,
+          "principal_investigator": "Dr. Robert Williams",
+          "patient_count": 683
+        }
+      }
+    ]
+  },
+  {
+    "id": "french-minds",
+    "title": "French Minds Consortium",
+    "description": "A national initiative to study the genetic and environmental factors contributing to psychiatric disorders in the French population.",
+    "imageUrl": "https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?w=800&q=80",
+    "institution": "French National Institute of Health and Medical Research (INSERM)",
+    "principalInvestigator": "Dr. Philippe Martin",
+    "lastUpdated": "2023-10-08",
+    "categories": ["Genetics", "Epidemiology", "Neurodevelopmental Disorders"],
+    "objectives": "The French Minds Consortium aims to identify genetic and environmental risk factors for major psychiatric disorders through large-scale population studies and advanced genomic analyses.",
+    "statistics": [
+      {
+        "label": "Participants",
+        "value": 12450
+      },
+      {
+        "label": "Research Sites",
+        "value": 8
+      }
+    ],
+    "contactEmail": "info@frenchminds.org",
+    "datasets": [
+      {
+        "id": "french-minds-genetics",
+        "title": "French Minds Genetics Database",
+        "description": "Comprehensive genetic data from participants with various psychiatric conditions",
+        "recordCount": 8750,
+        "lastUpdated": "2023-09-15"
+      },
+      {
+        "id": "french-minds-environmental",
+        "title": "Environmental Factors Database",
+        "description": "Data on environmental exposures and life events associated with psychiatric disorders",
+        "recordCount": 6200,
+        "lastUpdated": "2023-08-22"
+      }
+    ]
+  },
+  {
+    "id": "neurocog-project",
+    "title": "NeuroCog Longitudinal Study",
+    "description": "A longitudinal study of cognitive changes in psychiatric disorders across the lifespan.",
+    "imageUrl": "https://images.unsplash.com/photo-1559757175-5700dde675bc?w=800&q=80",
+    "institution": "University of Paris",
+    "principalInvestigator": "Dr. Sophie Dubois",
+    "lastUpdated": "2023-11-02",
+    "categories": ["Cognitive Science", "Longitudinal Studies", "Aging"],
+    "datasets": [
+      {
+        "id": "neurocog-baseline",
+        "title": "NeuroCog Baseline Assessment",
+        "description": "Initial cognitive assessments from participants aged 18-80",
+        "recordCount": 2340,
+        "lastUpdated": "2023-07-10"
+      },
+      {
+        "id": "neurocog-followup",
+        "title": "NeuroCog Follow-up Data",
+        "description": "Longitudinal follow-up assessments at 2, 5, and 10 years",
+        "recordCount": 1875,
+        "lastUpdated": "2023-10-30"
+      }
+    ]
+  },
+  {
+    "id": "psychosis-prevention",
+    "title": "Early Psychosis Prevention Initiative",
+    "description": "A multi-site study focused on identifying early markers of psychosis and developing preventive interventions.",
+    "imageUrl": "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80",
+    "institution": "European Psychosis Research Network",
+    "principalInvestigator": "Dr. Marco Rossi",
+    "lastUpdated": "2023-09-20",
+    "categories": ["Psychosis", "Prevention", "Youth Mental Health"],
+    "datasets": [
+      {
+        "id": "psychosis-high-risk",
+        "title": "High-Risk Cohort Database",
+        "description": "Data from individuals identified as being at high risk for developing psychosis",
+        "recordCount": 1250,
+        "lastUpdated": "2023-08-15"
+      },
+      {
+        "id": "psychosis-biomarkers",
+        "title": "Psychosis Biomarkers",
+        "description": "Neuroimaging and blood-based biomarkers associated with psychosis risk",
+        "recordCount": 980,
+        "lastUpdated": "2023-09-05"
+      }
+    ]
+  },
+  {
+    "id": "mood-disorders-consortium",
+    "title": "International Mood Disorders Consortium",
+    "description": "A global collaboration studying the biological basis of mood disorders across diverse populations.",
+    "imageUrl": "https://images.unsplash.com/photo-1493612276216-ee3925520721?w=800&q=80",
+    "institution": "Global Mental Health Initiative",
+    "principalInvestigator": "Dr. Elena Petrova",
+    "lastUpdated": "2023-10-25",
+    "categories": ["Mood Disorders", "International", "Transcultural Psychiatry"],
+    "datasets": [
+      {
+        "id": "mood-disorders-europe",
+        "title": "European Mood Disorders Database",
+        "description": "Clinical and biological data from European participants with major depression and bipolar disorder",
+        "recordCount": 3450,
+        "lastUpdated": "2023-09-12"
+      },
+      {
+        "id": "mood-disorders-asia",
+        "title": "Asian Mood Disorders Database",
+        "description": "Clinical and biological data from Asian participants with major depression and bipolar disorder",
+        "recordCount": 2780,
+        "lastUpdated": "2023-08-30"
+      }
+    ]
+  },
+  {
+    "id": "trauma-resilience",
+    "title": "Trauma and Resilience Research Network",
+    "description": "A research initiative studying psychological resilience factors in individuals exposed to trauma.",
+    "imageUrl": "https://images.unsplash.com/photo-1518430435414-a3e27a4f21a1?w=800&q=80",
+    "institution": "Center for Trauma Studies",
+    "principalInvestigator": "Dr. James Wilson",
+    "lastUpdated": "2023-11-10",
+    "categories": ["Trauma", "Resilience", "PTSD"],
+    "datasets": [
+      {
+        "id": "trauma-exposure",
+        "title": "Trauma Exposure Database",
+        "description": "Data on various types of trauma exposure and associated mental health outcomes",
+        "recordCount": 4200,
+        "lastUpdated": "2023-10-05"
+      },
+      {
+        "id": "resilience-factors",
+        "title": "Psychological Resilience Factors",
+        "description": "Data on protective factors associated with positive outcomes following trauma exposure",
+        "recordCount": 3150,
+        "lastUpdated": "2023-09-18"
+      }
+    ]
+  }
+]
