@@ -38,7 +38,7 @@ const VariableSelectionSummary = ({
   );
 
   return (
-    <Card className="w-full bg-white">
+    <Card className="w-full bg-white shadow-sm hover:shadow-md transition-shadow duration-300">
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl font-bold text-gray-800">
@@ -63,10 +63,43 @@ const VariableSelectionSummary = ({
           </div>
         ) : (
           <>
-            <ScrollArea className="h-[350px] sm:h-[500px] pr-4">
+            <div className="bg-green-50 border border-green-200 rounded-md p-3 mb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <Check className="h-5 w-5 text-green-600 mr-2" />
+                  <span className="font-medium text-green-800">
+                    {totalSelectedVariables} variables selected from{" "}
+                    {nonEmptySelections.length} questionnaires
+                  </span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-green-700 border-green-300 hover:bg-green-100 hover:text-green-800"
+                  onClick={onFinalize}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      Request Data <ChevronRight className="h-4 w-4 ml-2" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <ScrollArea className="h-[350px] sm:h-[450px] pr-4">
               <div className="space-y-4 sm:space-y-6">
                 {nonEmptySelections.map((selection, index) => (
-                  <div key={index} className="space-y-2">
+                  <div
+                    key={index}
+                    className="space-y-2 border border-gray-100 rounded-lg p-4 hover:border-blue-200 transition-colors"
+                  >
                     <div className="flex justify-between items-center">
                       <h3 className="font-medium text-gray-800">
                         {selection.formName}{" "}
@@ -87,18 +120,20 @@ const VariableSelectionSummary = ({
                         </Button>
                       )}
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-4 space-y-3 border border-gray-100 shadow-sm">
+                    <div className="bg-gray-50 rounded-lg p-4 space-y-1 shadow-sm">
                       {selection.selectedVariables.map((variable, varIndex) => (
                         <div
                           key={varIndex}
                           className="flex items-center space-x-2 text-sm p-2 hover:bg-white rounded-md transition-colors duration-200"
                         >
-                          <Check className="h-4 w-4 text-green-600" />
-                          <div>
+                          <Check className="h-4 w-4 text-green-600 shrink-0" />
+                          <div className="truncate">
                             <span className="font-medium">
                               {variable.name}:
                             </span>{" "}
-                            {variable.description}
+                            <span className="text-gray-700">
+                              {variable.description}
+                            </span>
                           </div>
                         </div>
                       ))}
@@ -136,7 +171,7 @@ const VariableSelectionSummary = ({
                 )}
               </Button>
             </div>
-            
+
             <div className="mt-4 p-3 bg-blue-50 rounded-md border border-blue-100 text-sm text-blue-800">
               <p className="font-medium mb-1">What happens next?</p>
               <p>When you click "Request Data", the system will:</p>

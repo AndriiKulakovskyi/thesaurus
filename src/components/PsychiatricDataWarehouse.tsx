@@ -6,6 +6,7 @@ import DatasetGrid from "./DatasetGrid";
 import { Separator } from "./ui/separator";
 import DataSelectionGuide from "./DataSelectionGuide";
 import CloudEnvironmentGrid from "./CloudEnvironmentGrid";
+import { Database, FileSpreadsheet, Server } from "lucide-react";
 
 const PsychiatricDataWarehouse = () => {
   const [activeTab, setActiveTab] = useState("projects");
@@ -16,14 +17,10 @@ const PsychiatricDataWarehouse = () => {
         title="Psychiatric Data Warehouse"
         subtitle="Centralized Repository for Psychiatric Research Data"
       />
-
       <main className="flex-grow py-4 sm:py-6 md:py-8 px-3 sm:px-4">
         <div className="max-w-7xl mx-auto">
           <div className="mb-6 sm:mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-              Psychiatric Data Warehouse
-            </h1>
-            <p className="mt-2 text-sm sm:text-base text-gray-600">
+            <p className="text-sm sm:text-base text-gray-600">
               Explore and access data from multiple psychiatric research
               projects. Browse available projects, request access to specific
               datasets, or extract variables for your analysis.
@@ -37,10 +34,22 @@ const PsychiatricDataWarehouse = () => {
             onValueChange={setActiveTab}
             className="w-full mb-6"
           >
-            <TabsList className="grid w-full max-w-md grid-cols-3 mb-6">
-              <TabsTrigger value="projects">Research Projects</TabsTrigger>
-              <TabsTrigger value="extraction">Data Extraction</TabsTrigger>
-              <TabsTrigger value="cloud">Cloud Environment</TabsTrigger>
+            <TabsList className="grid w-full max-w-md grid-cols-3 mb-6 h-11 h-[17]">
+              <TabsTrigger value="projects" className="flex items-center gap-2">
+                <Database className="h-4 w-4" />
+                <span>Research Projects</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="extraction"
+                className="flex items-center gap-2"
+              >
+                <FileSpreadsheet className="h-4 w-4" />
+                <span>Data Extraction</span>
+              </TabsTrigger>
+              <TabsTrigger value="cloud" className="flex items-center gap-2">
+                <Server className="h-4 w-4" />
+                <span>Cloud Environment</span>
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="projects" className="w-full">
@@ -64,10 +73,12 @@ const PsychiatricDataWarehouse = () => {
           </Tabs>
         </div>
       </main>
-
       <footer className="bg-white border-t border-gray-200 py-6 px-4">
         <div className="max-w-7xl mx-auto text-center text-gray-500 text-sm">
-          <p>© 2023 Psychiatric Data Warehouse for Research</p>
+          <p>
+            © {new Date().getFullYear()} Psychiatric Data Warehouse for
+            Research
+          </p>
           <p className="mt-1">
             All data is anonymized and used for research purposes only.
           </p>

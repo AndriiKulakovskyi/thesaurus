@@ -11,7 +11,12 @@ import { Badge } from "./ui/badge";
 import { Calendar, Database, User, Microscope, Info } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 
 interface DatasetCardProps {
   id: string;
@@ -53,36 +58,37 @@ const DatasetCard = ({
   if (metadata?.study_type) {
     metadataItems.push({
       icon: <Microscope className="h-3 w-3" />,
-      text: `${metadata.study_type}${metadata.year_started ? ` (${metadata.year_started})` : ''}`
+      text: `${metadata.study_type}${metadata.year_started ? ` (${metadata.year_started})` : ""}`,
     });
   }
   if (metadata?.principal_investigator) {
     metadataItems.push({
       icon: <User className="h-3 w-3" />,
-      text: metadata.principal_investigator
+      text: metadata.principal_investigator,
     });
   }
 
   return (
     <Card
-      className="w-full h-full min-h-[150px] transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer bg-white border border-gray-100 overflow-hidden"
+      className="w-full h-full min-h-[150px] transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer bg-white border border-gray-100 overflow-hidden group"
       onClick={handleClick}
     >
       <div className="flex flex-col h-full">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-purple-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
         <CardHeader className="pb-2 space-y-2 flex-grow">
           <div className="flex justify-between items-start gap-2">
-            <CardTitle className="text-xl font-semibold text-gray-800 truncate">
+            <CardTitle className="text-xl font-semibold text-gray-800 truncate group-hover:text-blue-700 transition-colors">
               {title}
             </CardTitle>
             <Badge
               variant="outline"
-              className="bg-blue-50 text-blue-700 border-blue-200 whitespace-nowrap"
+              className="bg-blue-50 text-blue-700 border-blue-200 whitespace-nowrap group-hover:bg-blue-100 transition-colors"
             >
               <Database className="h-3 w-3 mr-1" />
-              {recordCount} records
+              {new Intl.NumberFormat().format(recordCount)} records
             </Badge>
           </div>
-          
+
           <CardDescription className="text-gray-500 line-clamp-2 h-10 overflow-hidden">
             {description}
           </CardDescription>
@@ -105,7 +111,10 @@ const DatasetCard = ({
         <div className="px-6 pb-2">
           <div className="flex flex-wrap gap-3 text-xs text-gray-600">
             {metadataItems.map((item, index) => (
-              <div key={index} className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full">
+              <div
+                key={index}
+                className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-full group-hover:bg-blue-50 group-hover:text-blue-700 transition-colors"
+              >
                 {item.icon}
                 <span className="truncate max-w-[150px]">{item.text}</span>
               </div>
@@ -113,7 +122,7 @@ const DatasetCard = ({
           </div>
         </div>
 
-        <CardFooter className="pt-2 border-t border-gray-100 flex items-center justify-between mt-auto bg-gray-50 px-6 py-3">
+        <CardFooter className="pt-2 border-t border-gray-100 flex items-center justify-between mt-auto bg-gray-50 px-6 py-3 group-hover:bg-blue-50/50 transition-colors">
           <div className="flex items-center text-xs text-gray-500">
             <Calendar className="h-3 w-3 mr-1" />
             {lastUpdated}
@@ -121,7 +130,7 @@ const DatasetCard = ({
           <Button
             variant="ghost"
             size="sm"
-            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 text-xs px-2"
+            className="text-blue-600 hover:text-blue-800 hover:bg-blue-100 text-xs px-2 transition-colors"
           >
             View Details
           </Button>

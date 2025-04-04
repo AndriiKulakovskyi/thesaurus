@@ -21,13 +21,13 @@ import { useToast } from "./ui/use-toast";
 import BreadcrumbNav from "./BreadcrumbNav";
 import FloatingSelectionIndicator from "./FloatingSelectionIndicator";
 import DataSelectionGuide from "./DataSelectionGuide";
-import { 
-  Database, 
+import {
+  Database,
   VariableSelection as ApiVariableSelection,
   ExtractionRequest,
   fetchDatabase,
   fetchQuestionnaires,
-  submitExtraction
+  submitExtraction,
 } from "../lib/api";
 
 interface ComponentVariableSelection {
@@ -40,8 +40,8 @@ interface ComponentVariableSelection {
 // Helper to get questionnaire identifier
 const getQuestionnaireId = (tableName: string, schemaName: string): string => {
   // If table name includes schema (e.g. "schema.table"), just extract the table part
-  if (tableName.includes('.')) {
-    return tableName.split('.')[1];
+  if (tableName.includes(".")) {
+    return tableName.split(".")[1];
   }
   // Otherwise just return the table name as is
   return tableName;
@@ -63,11 +63,11 @@ const DatasetDetail = () => {
   >([]);
   const [activeTab, setActiveTab] = useState<string>("questionnaires");
   const [submitting, setSubmitting] = useState(false);
-  
+
   // Calculate total selected variables
   const totalSelectedVariables = variableSelections.reduce(
     (total, selection) => total + selection.selectedVariables.length,
-    0
+    0,
   );
 
   // Determine the current step for the DataSelectionGuide
@@ -99,28 +99,32 @@ const DatasetDetail = () => {
   useEffect(() => {
     const loadDataset = async () => {
       if (!id) return;
-      
+
       try {
         setLoading(true);
-        
+
         // Fetch the database details (schema)
         const datasetData = await fetchDatabase(id);
         setDataset(datasetData);
-        
+
         // Fetch questionnaires (tables) for this dataset (schema)
         const questionnairesData = await fetchQuestionnaires(id);
         setQuestionnaires(questionnairesData);
-        
+
         // Log the questionnaire IDs to help with debugging
-        console.log("Questionnaires loaded:", questionnairesData.map(q => ({
-          form: q.form.nomFormulaire,
-          table: q.form.nomTable,
-          id: getQuestionnaireId(q.form.nomTable, id)
-        })));
-        
+        console.log(
+          "Questionnaires loaded:",
+          questionnairesData.map((q) => ({
+            form: q.form.nomFormulaire,
+            table: q.form.nomTable,
+            id: getQuestionnaireId(q.form.nomTable, id),
+          })),
+        );
+
         setLoading(false);
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+        const errorMessage =
+          err instanceof Error ? err.message : "An unknown error occurred";
         setError(errorMessage);
         setLoading(false);
         console.error("Error loading dataset:", err);
@@ -145,15 +149,17 @@ const DatasetDetail = () => {
     setActiveTab("questionnaires");
   };
 
-  const handleVariableSelectionChange = (selection: ComponentVariableSelection) => {
+  const handleVariableSelectionChange = (
+    selection: ComponentVariableSelection,
+  ) => {
     // Log to confirm what selection was received
     console.log("Selection received:", selection);
-    
+
     // Update the selections array, replacing any existing selection for this questionnaire
     const updatedSelections = variableSelections.filter(
-      (s) => s.questionnaireId !== selection.questionnaireId
+      (s) => s.questionnaireId !== selection.questionnaireId,
     );
-    
+
     // Only add the selection if there are variables selected
     if (selection.selectedVariables.length > 0) {
       updatedSelections.push(selection);
@@ -161,10 +167,10 @@ const DatasetDetail = () => {
     } else {
       console.log("Removed selection for:", selection.questionnaireId);
     }
-    
+
     // Log the updated selections
     console.log("Updated selections:", updatedSelections);
-    
+
     setVariableSelections(updatedSelections);
   };
 
@@ -185,33 +191,36 @@ const DatasetDetail = () => {
 
   const handleFinalizeSelections = async () => {
     if (!dataset) return;
-    
+
     // Show loading state
     setSubmitting(true);
-    
+
     try {
       // Convert component selections to API format
-      const apiSelections: ApiVariableSelection[] = variableSelections.map(selection => ({
-        questionnaireId: selection.questionnaireId,
-        variables: selection.selectedVariables.map(v => v.name)
-      }));
-      
+      const apiSelections: ApiVariableSelection[] = variableSelections.map(
+        (selection) => ({
+          questionnaireId: selection.questionnaireId,
+          variables: selection.selectedVariables.map((v) => v.name),
+        }),
+      );
+
       // Create the request object
       const extractionRequest: ExtractionRequest = {
         datasetId: dataset.id,
-        selections: apiSelections
+        selections: apiSelections,
       };
-      
+
       // Show preparing message
       toast({
         title: "Preparing data extraction",
-        description: "We're processing your request. This might take a moment...",
+        description:
+          "We're processing your request. This might take a moment...",
         duration: 3000,
       });
-      
+
       // Send the extraction request to the API
       const response = await submitExtraction(extractionRequest);
-      
+
       // Check response status for different types of results
       if (response.status === "warning") {
         // Warning means extraction completed but with issues
@@ -236,12 +245,12 @@ const DatasetDetail = () => {
           duration: 5000,
         });
       }
-      
     } catch (err) {
       // Show error message
       toast({
         title: "Data extraction failed",
-        description: err instanceof Error ? err.message : "An unknown error occurred",
+        description:
+          err instanceof Error ? err.message : "An unknown error occurred",
         variant: "destructive",
         duration: 5000,
       });
@@ -264,12 +273,18 @@ const DatasetDetail = () => {
 
   const renderQuestionnaires = () => {
     return questionnaires.map((questionnaire, index) => {
-      const questionnaireId = getQuestionnaireId(questionnaire.form.nomTable, id || '');
-      console.log(`Generated ID for ${questionnaire.form.nomTable}:`, questionnaireId);
-      
+      const questionnaireId = getQuestionnaireId(
+        questionnaire.form.nomTable,
+        id || "",
+      );
+      console.log(
+        `Generated ID for ${questionnaire.form.nomTable}:`,
+        questionnaireId,
+      );
+
       // Check if this questionnaire has any selected variables
       const selection = variableSelections.find(
-        (s) => s.questionnaireId === questionnaireId
+        (s) => s.questionnaireId === questionnaireId,
       );
       const hasSelections = selection && selection.selectedVariables.length > 0;
 
@@ -297,7 +312,7 @@ const DatasetDetail = () => {
           <p className="mt-2 text-gray-600 text-sm">
             {questionnaire.fields[0].length} variables available
           </p>
-          
+
           {hasSelections && (
             <div className="mt-3 p-2 bg-green-100 rounded text-sm text-green-800">
               <p className="font-medium">Selected variables:</p>
@@ -386,10 +401,13 @@ const DatasetDetail = () => {
   return (
     <div className="w-full max-w-7xl mx-auto p-4 sm:p-6 flex flex-col gap-4">
       <BreadcrumbNav
-        items={[{ label: "Home", href: "/" }, { label: dataset?.title || "Dataset" }]}
+        items={[
+          { label: "Home", href: "/" },
+          { label: dataset?.title || "Dataset" },
+        ]}
       />
 
-      <div className="p-6 rounded-xl border border-gray-100 bg-white mb-4">
+      <div className="p-6 rounded-xl border border-gray-100 bg-white mb-4 shadow-sm hover:shadow-md transition-shadow duration-300">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="flex-grow">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-2">
@@ -403,28 +421,34 @@ const DatasetDetail = () => {
                 <Skeleton className="h-4 w-full max-w-lg" />
               )}
             </p>
-            
+
             {dataset?.metadata && (
               <div className="mt-4 flex flex-wrap gap-3">
                 {dataset.metadata.study_type && (
-                  <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full">
+                  <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full hover:bg-blue-100 transition-colors cursor-default">
                     <Microscope className="h-4 w-4" />
                     <span className="text-sm font-medium">
                       {dataset.metadata.study_type}
-                      {dataset.metadata.year_started ? ` (${dataset.metadata.year_started})` : ''}
+                      {dataset.metadata.year_started
+                        ? ` (${dataset.metadata.year_started})`
+                        : ""}
                     </span>
                   </div>
                 )}
                 {dataset.metadata.principal_investigator && (
-                  <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-1.5 rounded-full">
+                  <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-1.5 rounded-full hover:bg-green-100 transition-colors cursor-default">
                     <User className="h-4 w-4" />
-                    <span className="text-sm font-medium">{dataset.metadata.principal_investigator}</span>
+                    <span className="text-sm font-medium">
+                      {dataset.metadata.principal_investigator}
+                    </span>
                   </div>
                 )}
                 {dataset.metadata.patient_count && (
-                  <div className="flex items-center gap-2 bg-purple-50 text-purple-700 px-3 py-1.5 rounded-full">
+                  <div className="flex items-center gap-2 bg-purple-50 text-purple-700 px-3 py-1.5 rounded-full hover:bg-purple-100 transition-colors cursor-default">
                     <DatabaseIcon className="h-4 w-4" />
-                    <span className="text-sm font-medium">{dataset.metadata.patient_count} patients</span>
+                    <span className="text-sm font-medium">
+                      {dataset.metadata.patient_count} patients
+                    </span>
                   </div>
                 )}
               </div>
@@ -432,21 +456,19 @@ const DatasetDetail = () => {
           </div>
 
           <div className="md:w-64 flex flex-col gap-4">
-            <div className="flex flex-col gap-2 p-4 rounded-lg bg-gray-50">
+            <div className="flex flex-col gap-2 p-4 rounded-lg bg-gray-50 border border-gray-100">
               <div className="flex justify-between items-center">
                 <span className="text-gray-600 font-medium">Records:</span>
                 <span className="font-bold text-blue-600">
                   {dataset ? (
-                    dataset.record_count
+                    new Intl.NumberFormat().format(dataset.record_count)
                   ) : (
                     <Skeleton className="h-4 w-12" />
                   )}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 font-medium">
-                  Last Updated:
-                </span>
+                <span className="text-gray-600 font-medium">Last Updated:</span>
                 <span className="text-gray-800">
                   {dataset ? (
                     new Date(dataset.last_updated).toLocaleDateString()
@@ -456,10 +478,10 @@ const DatasetDetail = () => {
                 </span>
               </div>
             </div>
-            
+
             <Button
               variant="outline"
-              className="w-full justify-center"
+              className="w-full justify-center hover:bg-blue-50 hover:text-blue-700 transition-colors"
               onClick={handleBackClick}
             >
               <ChevronLeft className="h-4 w-4 mr-2" />

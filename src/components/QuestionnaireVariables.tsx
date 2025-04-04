@@ -47,59 +47,71 @@ const QuestionnaireVariables = ({
   const [error, setError] = useState<string | null>(null);
   const [selectedVariables, setSelectedVariables] =
     useState<{ name: string; description: string }[]>(initialSelections);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const loadQuestionnaire = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch all questionnaires (tables) for this dataset (schema)
         const questionnaires = await fetchQuestionnaires(datasetId);
-        
+
         // Find the specific questionnaire we need using the table name from the ID
         const tableName = getTableNameFromId(questionnaireId);
-        console.log('Extracted table name:', tableName);
-        console.log('Looking for table in questionnaires:', questionnaires.map(q => q.form.nomTable));
-        
+        console.log("Extracted table name:", tableName);
+        console.log(
+          "Looking for table in questionnaires:",
+          questionnaires.map((q) => q.form.nomTable),
+        );
+
         // Try to find an exact match first
-        let found = questionnaires.find(q => q.form.nomTable === tableName);
-        
+        let found = questionnaires.find((q) => q.form.nomTable === tableName);
+
         // If no exact match, try a more flexible match (case insensitive or partial)
         if (!found && questionnaires.length > 0) {
-          found = questionnaires.find(q => {
+          found = questionnaires.find((q) => {
             // Try to match without being case sensitive
             return q.form.nomTable.toLowerCase() === tableName.toLowerCase();
           });
-          
+
           // If still not found, try to match by the end of the table name (which might include schema)
           if (!found) {
-            found = questionnaires.find(q => {
-              return tableName.endsWith(q.form.nomTable) || q.form.nomTable.endsWith(tableName);
+            found = questionnaires.find((q) => {
+              return (
+                tableName.endsWith(q.form.nomTable) ||
+                q.form.nomTable.endsWith(tableName)
+              );
             });
           }
-          
+
           // Last resort: try to match by the short table name
-          if (!found && tableName.includes('.')) {
-            const shortTableName = tableName.split('.').pop() || '';
-            found = questionnaires.find(q => {
-              const qShortName = q.form.nomTable.split('.').pop() || '';
+          if (!found && tableName.includes(".")) {
+            const shortTableName = tableName.split(".").pop() || "";
+            found = questionnaires.find((q) => {
+              const qShortName = q.form.nomTable.split(".").pop() || "";
               return qShortName === shortTableName;
             });
           }
         }
-        
+
         if (found) {
-          console.log('Found matching questionnaire:', found.form.nomTable);
+          console.log("Found matching questionnaire:", found.form.nomTable);
           setQuestionnaire(found);
         } else {
-          throw new Error(`Questionnaire ${questionnaireId} not found in dataset ${datasetId}`);
+          throw new Error(
+            `Questionnaire ${questionnaireId} not found in dataset ${datasetId}`,
+          );
         }
-        
+
         setLoading(false);
       } catch (err) {
         console.error("Error fetching questionnaire:", err);
-        setError(err instanceof Error ? err.message : "Failed to load questionnaire data");
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to load questionnaire data",
+        );
         setLoading(false);
       }
     };
@@ -165,39 +177,40 @@ const QuestionnaireVariables = ({
 
   // Get the flattened fields (columns) from the questionnaire
   const columns = questionnaire.fields[0];
-  
+
   // Filter columns based on search query
-  const filteredColumns = searchQuery.trim() === '' 
-    ? columns 
-    : columns.filter((column: any) => {
-        const searchLower = searchQuery.toLowerCase();
-        return (
-          column.variable_name.toLowerCase().includes(searchLower) ||
-          column.description.toLowerCase().includes(searchLower)
-        );
-      });
+  const filteredColumns =
+    searchQuery.trim() === ""
+      ? columns
+      : columns.filter((column: any) => {
+          const searchLower = searchQuery.toLowerCase();
+          return (
+            column.variable_name.toLowerCase().includes(searchLower) ||
+            column.description.toLowerCase().includes(searchLower)
+          );
+        });
 
   // Select all visible variables function
   const handleSelectAllVisible = (select: boolean) => {
     if (select) {
       // Create a map of existing selected variables for faster lookup
       const existingSelections = new Map(
-        selectedVariables.map(v => [v.name, v.description])
+        selectedVariables.map((v) => [v.name, v.description]),
       );
-      
+
       // Add all filtered columns that aren't already selected
       const newSelections = [...selectedVariables];
       filteredColumns.forEach((column: any) => {
         if (!existingSelections.has(column.variable_name)) {
           newSelections.push({
             name: column.variable_name,
-            description: column.description
+            description: column.description,
           });
         }
       });
-      
+
       setSelectedVariables(newSelections);
-      
+
       // Notify parent component of the change
       onSelectionChange({
         datasetId,
@@ -208,16 +221,16 @@ const QuestionnaireVariables = ({
     } else {
       // Create a set of variable names that are currently filtered/visible
       const filteredVariableNames = new Set(
-        filteredColumns.map((column: any) => column.variable_name)
+        filteredColumns.map((column: any) => column.variable_name),
       );
-      
+
       // Keep only variables that aren't in the filtered list
       const newSelections = selectedVariables.filter(
-        variable => !filteredVariableNames.has(variable.name)
+        (variable) => !filteredVariableNames.has(variable.name),
       );
-      
+
       setSelectedVariables(newSelections);
-      
+
       // Notify parent component of the change
       onSelectionChange({
         datasetId,
@@ -228,18 +241,21 @@ const QuestionnaireVariables = ({
     }
   };
 
-  const allVisibleSelected = filteredColumns.length > 0 && 
-    filteredColumns.every((column: any) => 
-      selectedVariables.some(v => v.name === column.variable_name)
+  const allVisibleSelected =
+    filteredColumns.length > 0 &&
+    filteredColumns.every((column: any) =>
+      selectedVariables.some((v) => v.name === column.variable_name),
     );
 
   return (
-    <Card className="w-full bg-white">
+    <Card className="w-full bg-white shadow-sm hover:shadow-md transition-shadow duration-300">
       <CardHeader>
         <div className="flex justify-between items-center">
           <CardTitle className="text-xl font-bold text-gray-800">
             {questionnaire.form.nomFormulaire}
-            <span className="text-xs font-normal text-gray-500 block mt-1">ID: {questionnaireId}</span>
+            <span className="text-xs font-normal text-gray-500 block mt-1">
+              ID: {questionnaireId}
+            </span>
           </CardTitle>
           <Badge variant="outline" className="bg-blue-50 text-blue-700">
             {columns.length} variables
@@ -251,7 +267,7 @@ const QuestionnaireVariables = ({
       </CardHeader>
       <Separator />
       <CardContent className="pt-4">
-        <div className="mb-4 flex items-center space-x-2">
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:space-x-2">
           <div className="relative flex-1">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-400" />
             <Input
@@ -266,26 +282,40 @@ const QuestionnaireVariables = ({
               </Badge>
             )}
           </div>
-          <div className="flex items-center">
-            <Checkbox 
-              id="select-all" 
-              checked={allVisibleSelected} 
-              onCheckedChange={(checked) => handleSelectAllVisible(!!checked)} 
+          <div className="flex items-center justify-end sm:justify-start">
+            <Checkbox
+              id="select-all"
+              checked={allVisibleSelected}
+              onCheckedChange={(checked) => handleSelectAllVisible(!!checked)}
               className="h-4 w-4 mr-2"
             />
-            <Label htmlFor="select-all" className="text-sm cursor-pointer whitespace-nowrap">
+            <Label
+              htmlFor="select-all"
+              className="text-sm cursor-pointer whitespace-nowrap"
+            >
               {allVisibleSelected ? "Deselect all" : "Select all"}
             </Label>
           </div>
         </div>
 
-        <div className="mb-2 flex justify-between items-center">
+        <div className="mb-2 flex justify-between items-center bg-gray-50 p-2 rounded-md">
           <div className="text-sm text-gray-500">
-            <Badge variant="outline" className="mr-2 font-normal">
+            <Badge variant="outline" className="mr-2 font-normal bg-white">
               {selectedVariables.length} selected
             </Badge>
             of {columns.length} total variables
           </div>
+
+          {selectedVariables.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-red-600 hover:text-red-700 hover:bg-red-50 text-xs"
+              onClick={() => handleSelectAllVisible(false)}
+            >
+              Clear selection
+            </Button>
+          )}
         </div>
 
         {filteredColumns.length === 0 ? (
@@ -297,16 +327,23 @@ const QuestionnaireVariables = ({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1">
               {filteredColumns.map((column: any, index: number) => {
                 const isSelected = selectedVariables.some(
-                  (variable) => variable.name === column.variable_name
+                  (variable) => variable.name === column.variable_name,
                 );
                 return (
                   <div
                     key={index}
                     className={`flex items-center py-1.5 px-3 rounded-md transition-colors duration-200 ${
-                      isSelected 
-                        ? "bg-blue-50 border border-blue-200" 
+                      isSelected
+                        ? "bg-blue-50 border border-blue-200"
                         : "hover:bg-gray-50 border border-transparent"
                     }`}
+                    onClick={() =>
+                      handleVariableToggle(
+                        column.variable_name,
+                        column.description,
+                        !isSelected,
+                      )
+                    }
                   >
                     <Checkbox
                       id={`${questionnaire.form.nomFormulaire}-${column.variable_name}`}
@@ -319,6 +356,7 @@ const QuestionnaireVariables = ({
                         )
                       }
                       className="h-4 w-4 mr-2"
+                      onClick={(e) => e.stopPropagation()}
                     />
                     <div className="flex-1 min-w-0">
                       <Label
@@ -330,15 +368,31 @@ const QuestionnaireVariables = ({
                       >
                         {column.description}
                       </Label>
-                      <p className="text-xs text-gray-500 truncate" title={column.variable_name}>
+                      <p
+                        className="text-xs text-gray-500 truncate"
+                        title={column.variable_name}
+                      >
                         {column.variable_name}
                       </p>
                     </div>
-                    {column.primary_key && (
-                      <Badge variant="outline" className="ml-1 text-xs px-1 py-0 h-4 bg-amber-50 text-amber-700">
-                        PK
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-1">
+                      {column.primary_key && (
+                        <Badge
+                          variant="outline"
+                          className="ml-1 text-xs px-1 py-0 h-4 bg-amber-50 text-amber-700"
+                        >
+                          PK
+                        </Badge>
+                      )}
+                      {column.data_type && (
+                        <Badge
+                          variant="outline"
+                          className="ml-1 text-xs px-1 py-0 h-4 bg-gray-50 text-gray-600"
+                        >
+                          {column.data_type}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 );
               })}
