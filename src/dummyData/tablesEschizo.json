@@ -1,0 +1,37 @@
+[
+  {
+    "name": "patients",
+    "description": "Basic patient demographic information",
+    "columns": ["id", "patient_id", "age", "gender", "enrollment_date", "status"]
+  },
+  {
+    "name": "visits",
+    "description": "Patient visit records and status",
+    "columns": ["id", "visit_id", "patient_id", "visit_number", "visit_date", "visit_type", "completed"]
+  },
+  {
+    "name": "panss",
+    "description": "Positive and Negative Syndrome Scale Assessment",
+    "columns": ["id", "patient_id", "visit_id", "assessment_date", "positive_score", "negative_score", "general_psychopathology", "total_score", "insight_score"]
+  },
+  {
+    "name": "cognitive_assessment",
+    "description": "Cognitive Function Assessment",
+    "columns": ["id", "patient_id", "visit_id", "assessment_date", "attention", "processing_speed", "working_memory", "verbal_learning", "visual_learning", "reasoning", "social_cognition", "global_score"]
+  },
+  {
+    "name": "functional_outcome",
+    "description": "Functional Outcome Measures",
+    "columns": ["id", "patient_id", "visit_id", "assessment_date", "self_care", "social_functioning", "occupational_functioning", "community_living", "treatment_adherence", "global_functioning"]
+  },
+  {
+    "name": "medication_tracking",
+    "description": "Antipsychotic Medication Tracking",
+    "columns": ["id", "patient_id", "medication_name", "medication_class", "dosage", "frequency", "start_date", "end_date", "reason_for_change", "efficacy_rating", "side_effects"]
+  },
+  {
+    "name": "brain_imaging",
+    "description": "Brain Imaging Results",
+    "columns": ["id", "patient_id", "scan_date", "scan_type", "brain_volume", "ventricle_size", "grey_matter_volume", "white_matter_integrity", "notable_findings"]
+  }
+] 

@@ -1,0 +1,32 @@
+[
+  {
+    "name": "patients",
+    "description": "Basic patient demographic information",
+    "columns": ["id", "patient_id", "age", "gender", "enrollment_date", "status"]
+  },
+  {
+    "name": "visits",
+    "description": "Patient visit records and status",
+    "columns": ["id", "visit_id", "patient_id", "visit_number", "visit_date", "visit_type", "completed"]
+  },
+  {
+    "name": "mood_assessment",
+    "description": "Mood State Assessment Results",
+    "columns": ["id", "patient_id", "visit_id", "depression_score", "mania_score", "anxiety_score", "irritability", "overall_state"]
+  },
+  {
+    "name": "medication_tracking",
+    "description": "Medication Regimen and Adherence",
+    "columns": ["id", "patient_id", "medication_name", "dosage", "frequency", "start_date", "end_date", "adherence_rate", "side_effects"]
+  },
+  {
+    "name": "life_events",
+    "description": "Significant Life Events Assessment",
+    "columns": ["id", "patient_id", "event_date", "event_type", "severity", "impact_score", "coping_response"]
+  },
+  {
+    "name": "sleep_patterns",
+    "description": "Sleep Quality and Patterns",
+    "columns": ["id", "patient_id", "date", "hours_slept", "sleep_quality", "sleep_onset_time", "wake_time", "disturbances"]
+  }
+] 

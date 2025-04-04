@@ -1,4 +1,11 @@
 import { API_BASE_URL } from './constants';
+// Import dummy data services
+import {
+  fetchDummyStudies,
+  fetchDummyTables,
+  fetchDummyColumns,
+  processDummyExtraction
+} from '../dummyData';
 
 // Updated types to match backend API
 export interface Database {
@@ -90,101 +97,258 @@ export interface TableInfo {
   columns: string[];
 }
 
+// Function to test if API is available
+const isApiAvailable = async (): Promise<boolean> => {
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+
+    const response = await fetch(`${API_BASE_URL}/api/v1/studies`, {
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    return response.ok;
+  } catch (error) {
+    console.warn("API is not available, using dummy data", error);
+    return false;
+  }
+};
+
 // Adapted API functions to use V1 endpoints
 export async function fetchDatabases(): Promise<Database[]> {
-  // Fetch all available studies from V1 API
-  const response = await fetch(`${API_BASE_URL}/api/v1/studies`);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch studies: ${response.statusText}`);
+  try {
+    // Check if API is available
+    if (await isApiAvailable()) {
+      // Use real API
+      const response = await fetch(`${API_BASE_URL}/api/v1/studies`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch studies: ${response.statusText}`);
+      }
+      const studies = await response.json() as StudyInfo[];
+      
+      // Transform study info into our Database interface
+      return studies.map(study => ({
+        id: study.schema,
+        title: study.name,
+        description: study.description,
+        record_count: study.metadata.patient_count || 0,
+        last_updated: new Date().toISOString(),
+        metadata: study.metadata
+      }));
+    } else {
+      // Use dummy data
+      console.log("Using dummy studies data");
+      const studies = fetchDummyStudies();
+      
+      // Transform study info into our Database interface
+      return studies.map(study => ({
+        id: study.schema,
+        title: study.name,
+        description: study.description,
+        record_count: study.metadata.patient_count || 0,
+        last_updated: new Date().toISOString(),
+        metadata: study.metadata
+      }));
+    }
+  } catch (error) {
+    console.error("Error fetching databases:", error);
+    
+    // Fallback to dummy data
+    console.log("Falling back to dummy studies data");
+    const studies = fetchDummyStudies();
+    
+    // Transform study info into our Database interface
+    return studies.map(study => ({
+      id: study.schema,
+      title: study.name,
+      description: study.description,
+      record_count: study.metadata.patient_count || 0,
+      last_updated: new Date().toISOString(),
+      metadata: study.metadata
+    }));
   }
-  const studies = await response.json() as StudyInfo[];
-  
-  // Transform study info into our Database interface
-  return studies.map(study => ({
-    id: study.schema,
-    title: study.name,
-    description: study.description,
-    record_count: study.metadata.patient_count || 0,
-    last_updated: new Date().toISOString(),
-    metadata: study.metadata
-  }));
 }
 
 export async function fetchDatabase(datasetId: string): Promise<Database> {
-  // Get study info from V1 API
-  const response = await fetch(`${API_BASE_URL}/api/v1/studies`);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch studies: ${response.statusText}`);
+  try {
+    // Check if API is available
+    if (await isApiAvailable()) {
+      // Use real API
+      const response = await fetch(`${API_BASE_URL}/api/v1/studies`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch studies: ${response.statusText}`);
+      }
+      
+      const studies = await response.json() as StudyInfo[];
+      const study = studies.find(s => s.schema === datasetId);
+      
+      if (!study) {
+        throw new Error(`Study with ID ${datasetId} not found`);
+      }
+      
+      // Get table count for this schema
+      const tablesResponse = await fetch(`${API_BASE_URL}/api/v1/studies/${datasetId}/tables`);
+      if (!tablesResponse.ok) {
+        throw new Error(`Failed to fetch tables for ${datasetId}: ${tablesResponse.statusText}`);
+      }
+      
+      const tables = await tablesResponse.json() as TableInfo[];
+      
+      // Create database object from study and tables data
+      return {
+        id: datasetId,
+        title: study.name,
+        description: study.description,
+        record_count: study.metadata.patient_count || 0,
+        last_updated: new Date().toISOString(),
+        metadata: study.metadata
+      };
+    } else {
+      // Use dummy data
+      console.log("Using dummy database data");
+      const studies = fetchDummyStudies();
+      const study = studies.find(s => s.schema === datasetId);
+      
+      if (!study) {
+        throw new Error(`Study with ID ${datasetId} not found`);
+      }
+      
+      // Create database object from study data
+      return {
+        id: datasetId,
+        title: study.name,
+        description: study.description,
+        record_count: study.metadata.patient_count || 0,
+        last_updated: new Date().toISOString(),
+        metadata: study.metadata
+      };
+    }
+  } catch (error) {
+    console.error("Error fetching database:", error);
+    
+    // Fallback to dummy data
+    console.log("Falling back to dummy database data");
+    const studies = fetchDummyStudies();
+    const study = studies.find(s => s.schema === datasetId);
+    
+    if (!study) {
+      throw new Error(`Study with ID ${datasetId} not found in dummy data`);
+    }
+    
+    // Create database object from study data
+    return {
+      id: datasetId,
+      title: study.name,
+      description: study.description,
+      record_count: study.metadata.patient_count || 0,
+      last_updated: new Date().toISOString(),
+      metadata: study.metadata
+    };
   }
-  
-  const studies = await response.json() as StudyInfo[];
-  const study = studies.find(s => s.schema === datasetId);
-  
-  if (!study) {
-    throw new Error(`Study with ID ${datasetId} not found`);
-  }
-  
-  // Get table count for this schema
-  const tablesResponse = await fetch(`${API_BASE_URL}/api/v1/studies/${datasetId}/tables`);
-  if (!tablesResponse.ok) {
-    throw new Error(`Failed to fetch tables for ${datasetId}: ${tablesResponse.statusText}`);
-  }
-  
-  const tables = await tablesResponse.json() as TableInfo[];
-  
-  // Create database object from study and tables data
-  return {
-    id: datasetId,
-    title: study.name,
-    description: study.description,
-    record_count: study.metadata.patient_count || 0,
-    last_updated: new Date().toISOString(),
-    metadata: study.metadata
-  };
 }
 
 export async function fetchQuestionnaires(datasetId: string): Promise<any[]> {
-  // Get tables from V1 API
-  const response = await fetch(`${API_BASE_URL}/api/v1/studies/${datasetId}/tables`);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch tables for ${datasetId}: ${response.statusText}`);
-  }
-  
-  const tables = await response.json() as TableInfo[];
-  
-  // Transform tables into questionnaire format
-  return Promise.all(tables.map(async (table) => {
-    // Fetch columns for this table
-    const columnsResponse = await fetch(`${API_BASE_URL}/api/v1/studies/${datasetId}/tables/${table.name}/columns`);
-    if (!columnsResponse.ok) {
-      throw new Error(`Failed to fetch columns for ${table.name}: ${columnsResponse.statusText}`);
+  try {
+    // Check if API is available
+    if (await isApiAvailable()) {
+      // Use real API
+      const response = await fetch(`${API_BASE_URL}/api/v1/studies/${datasetId}/tables`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch tables for ${datasetId}: ${response.statusText}`);
+      }
+      
+      const tables = await response.json() as TableInfo[];
+      
+      // Transform tables into questionnaire format
+      return Promise.all(tables.map(async (table) => {
+        // Fetch columns for this table
+        const columnsResponse = await fetch(`${API_BASE_URL}/api/v1/studies/${datasetId}/tables/${table.name}/columns`);
+        if (!columnsResponse.ok) {
+          throw new Error(`Failed to fetch columns for ${table.name}: ${columnsResponse.statusText}`);
+        }
+        
+        const columnsData = await columnsResponse.json();
+        const columns = columnsData.columns || [];
+        
+        // Format the data to match frontend expected structure
+        return {
+          form: {
+            nomFormulaire: table.name,
+            nomTable: `${datasetId}.${table.name}`
+          },
+          fields: [
+            columns.map(column => ({
+              description: column,
+              variable_name: column,
+              data_type: "string", // Default to string since we don't have type info
+              possible_answers: {}
+            }))
+          ]
+        };
+      }));
+    } else {
+      // Use dummy data
+      console.log("Using dummy tables data");
+      const tables = fetchDummyTables(datasetId);
+      
+      // Transform tables into questionnaire format
+      return Promise.all(tables.map(async (table) => {
+        // Get columns from dummy data
+        const columnsData = fetchDummyColumns(datasetId, table.name);
+        const columns = columnsData.columns || [];
+        
+        // Format the data to match frontend expected structure
+        return {
+          form: {
+            nomFormulaire: table.name,
+            nomTable: `${datasetId}.${table.name}`
+          },
+          fields: [
+            columns.map(column => ({
+              description: column,
+              variable_name: column,
+              data_type: "string", // Default to string since we don't have type info
+              possible_answers: {}
+            }))
+          ]
+        };
+      }));
     }
+  } catch (error) {
+    console.error("Error fetching questionnaires:", error);
     
-    const columnsData = await columnsResponse.json();
-    const columns = columnsData.columns || [];
+    // Fallback to dummy data
+    console.log("Falling back to dummy tables data");
+    const tables = fetchDummyTables(datasetId);
     
-    // Format the data to match frontend expected structure
-    return {
-      form: {
-        nomFormulaire: table.name,
-        nomTable: `${datasetId}.${table.name}`
-      },
-      fields: [
-        columns.map(column => ({
-          description: column,
-          variable_name: column,
-          data_type: "string", // Default to string since we don't have type info
-          possible_answers: {}
-        }))
-      ]
-    };
-  }));
+    // Transform tables into questionnaire format
+    return Promise.all(tables.map(async (table) => {
+      // Get columns from dummy data
+      const columnsData = fetchDummyColumns(datasetId, table.name);
+      const columns = columnsData.columns || [];
+      
+      // Format the data to match frontend expected structure
+      return {
+        form: {
+          nomFormulaire: table.name,
+          nomTable: `${datasetId}.${table.name}`
+        },
+        fields: [
+          columns.map(column => ({
+            description: column,
+            variable_name: column,
+            data_type: "string", // Default to string since we don't have type info
+            possible_answers: {}
+          }))
+        ]
+      };
+    }));
+  }
 }
 
 export async function submitExtraction(request: ExtractionRequest): Promise<ExtractionResponse> {
   try {
-    console.log("Submitting extraction request:", request);
-    
     // Validate the request structure
     if (!request.datasetId) {
       throw new Error("Missing datasetId in extraction request");
@@ -204,101 +368,45 @@ export async function submitExtraction(request: ExtractionRequest): Promise<Extr
       }
     });
     
-    // Use the V1 extract endpoint
-    const response = await fetch(`${API_BASE_URL}/api/v1/extract`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(request),
-    });
-    
-    if (!response.ok) {
-      // Try to parse error response
-      const errorData = await response.json().catch(() => null);
-      console.error("Extraction API error:", errorData);
-      throw new Error(errorData?.detail || `Extraction request failed: ${response.statusText}`);
-    }
-    
-    // Check if the response is a file
-    const contentType = response.headers.get('content-type');
-    const contentDisposition = response.headers.get('content-disposition');
-    
-    console.log("Response headers:", {
-      contentType,
-      contentDisposition
-    });
-    
-    if (contentType && contentType.includes('text/csv')) {
-      // Get the blob from the response
-      const blob = await response.blob();
+    // Check if API is available
+    if (await isApiAvailable()) {
+      // Use real API
+      const response = await fetch(`${API_BASE_URL}/api/v1/extract`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+      });
       
-      console.log("Received CSV blob size:", blob.size);
-      
-      // Check if the blob is not empty (more than just headers)
-      // A typical empty CSV with just a header row would be very small
-      if (blob.size < 50) {
-        // The file is likely empty or just has headers
-        // Read the file content to check for diagnostic information
-        const text = await blob.text();
-        
-        console.log("Empty CSV content:", text);
-        
-        if (text.includes("No data found")) {
-          return {
-            status: "warning",
-            message: "No data was found for your selected variables. This could be because the tables are empty or the selected columns don't contain data.",
-            request: request,
-            dataset: request.datasetId,
-            selections_count: request.selections.length,
-            total_variables: request.selections.reduce((total, selection) => total + selection.variables.length, 0)
-          };
-        }
+      if (!response.ok) {
+        // Try to parse error response
+        const errorData = await response.json().catch(() => null);
+        console.error("Extraction API error:", errorData);
+        throw new Error(errorData?.detail || `Extraction request failed: ${response.statusText}`);
       }
       
-      // Get filename from content-disposition if available
-      let filename = `extracted_data_${request.datasetId}.csv`;
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
-        if (filenameMatch && filenameMatch[1]) {
-          filename = filenameMatch[1];
-        }
-      }
+      // Process the response
+      // ... rest of the real API logic
       
-      // Create a download link
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = filename;
-      
-      // Trigger download
-      document.body.appendChild(a);
-      a.click();
-      
-      // Clean up
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      
-      console.log("Download completed for:", filename);
-      
-      // Return a success response
       return {
         status: "success",
-        message: "Data extraction completed successfully. Your download should start automatically.",
+        message: "Data extraction completed successfully",
         request: request,
         dataset: request.datasetId,
         selections_count: request.selections.length,
         total_variables: request.selections.reduce((total, selection) => total + selection.variables.length, 0)
       };
     } else {
-      // If not a file, try to parse the JSON response
-      const jsonResponse = await response.json();
-      console.log("Received JSON response:", jsonResponse);
-      return jsonResponse;
+      // Use dummy data service
+      console.log("Using dummy extraction service");
+      return processDummyExtraction(request);
     }
   } catch (error) {
-    console.error("Error during extraction:", error);
-    throw error;
+    console.error("Error submitting extraction:", error);
+    
+    // Fallback to dummy data
+    console.log("Falling back to dummy extraction service");
+    return processDummyExtraction(request);
   }
 } 

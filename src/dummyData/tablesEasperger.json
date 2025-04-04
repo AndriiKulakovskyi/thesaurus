@@ -1,0 +1,27 @@
+[
+  {
+    "name": "patients",
+    "description": "Basic patient demographic information",
+    "columns": ["id", "patient_id", "age", "gender", "enrollment_date", "status"]
+  },
+  {
+    "name": "visits",
+    "description": "Patient visit records and status",
+    "columns": ["id", "visit_id", "patient_id", "visit_number", "visit_date", "visit_type", "completed"]
+  },
+  {
+    "name": "aq",
+    "description": "Autism Quotient Assessment Results",
+    "columns": ["id", "patient_id", "social_skill", "attention_switching", "attention_to_detail", "communication", "imagination", "total_score"]
+  },
+  {
+    "name": "sensory_profile",
+    "description": "Sensory Processing Assessment",
+    "columns": ["id", "patient_id", "auditory", "visual", "tactile", "proprioception", "vestibular", "total_score"]
+  },
+  {
+    "name": "adaptive_functioning",
+    "description": "Adaptive Behavior Assessment",
+    "columns": ["id", "patient_id", "communication", "daily_living", "socialization", "motor_skills", "adaptive_behavior_composite"]
+  }
+] 

@@ -1,0 +1,37 @@
+[
+  {
+    "name": "patients",
+    "description": "Basic patient demographic information",
+    "columns": ["id", "patient_id", "age", "gender", "enrollment_date", "status"]
+  },
+  {
+    "name": "visits",
+    "description": "Patient visit records and status",
+    "columns": ["id", "visit_id", "patient_id", "visit_number", "visit_date", "visit_type", "completed"]
+  },
+  {
+    "name": "phq9",
+    "description": "Patient Health Questionnaire-9 Depression Assessment",
+    "columns": ["id", "patient_id", "visit_id", "date", "item1", "item2", "item3", "item4", "item5", "item6", "item7", "item8", "item9", "total_score", "severity"]
+  },
+  {
+    "name": "hads",
+    "description": "Hospital Anxiety and Depression Scale",
+    "columns": ["id", "patient_id", "visit_id", "date", "anxiety_score", "depression_score", "total_score"]
+  },
+  {
+    "name": "medication_tracking",
+    "description": "Antidepressant Medication Tracking",
+    "columns": ["id", "patient_id", "medication_name", "medication_class", "dosage", "frequency", "start_date", "end_date", "reason_for_change", "efficacy_rating", "side_effects"]
+  },
+  {
+    "name": "therapy_sessions",
+    "description": "Psychotherapy Session Records",
+    "columns": ["id", "patient_id", "therapist_id", "session_date", "session_number", "therapy_type", "focus_areas", "homework_assigned", "attendance", "progress_rating"]
+  },
+  {
+    "name": "quality_of_life",
+    "description": "Quality of Life Assessment",
+    "columns": ["id", "patient_id", "visit_id", "physical_health", "psychological", "social_relationships", "environment", "overall_quality"]
+  }
+] 
