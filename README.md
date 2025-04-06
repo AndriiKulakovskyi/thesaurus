@@ -54,25 +54,185 @@ yarn dev
 
 The application will be available at `http://localhost:5173`
 
-## Application Structure
+## Frontend Architecture
 
-### Frontend Architecture
-The application follows a component-based architecture:
-- `App.tsx` - Main application component
-- `components/` - Reusable UI components
-- `pages/` - Main application views
-- `services/` - API integration and data handling
-- `types/` - TypeScript type definitions
+### Component Structure
+The application follows a component-based architecture organized as follows:
+
+- **App.tsx**: Main application component that sets up routing and global providers
+- **components/**: Reusable UI components
+  - **DatasetGrid.tsx**: Displays a grid of available datasets with filtering and sorting capabilities
+  - **DatasetDetail.tsx**: Shows detailed information about a selected dataset and its questionnaires
+  - **QuestionnaireVariables.tsx**: Displays variables from a specific questionnaire with selection functionality
+  - **VariableSelectionSummary.tsx**: Summarizes selected variables across questionnaires
+  - **UI components**: Shadcn UI components for consistent styling
+- **lib/**: API integration and utilities
+  - **api.ts**: Re-exports from endpoints.ts for backward compatibility
+  - **endpoints.ts**: Contains all API endpoint functions and dummy data handling
+  - **constants.ts**: Application constants including API base URL
 
 ### Data Flow
-1. User browses available datasets on the home page
-2. Upon selecting a dataset, user is presented with associated questionnaires
+
+1. User browses available datasets on the home page (DatasetGrid)
+2. Upon selecting a dataset, user is presented with associated questionnaires (DatasetDetail)
 3. For each questionnaire:
-   - User can view questionnaire details ("nomFormulaire")
+   - User can view questionnaire details and variables (QuestionnaireVariables)
    - Select variables using provided descriptions
    - Save selections for the current questionnaire
-4. After completing all selections, user can retrieve the final selection
+4. After completing all selections, user can review and finalize the selection (VariableSelectionSummary)
 5. Selected data is formatted as JSON and sent to the API
+
+## API Integration
+
+### API Endpoints
+
+The application interacts with the following endpoints:
+
+#### 1. Fetch Databases/Datasets
+
+```typescript
+fetchDatabases(): Promise<Database[]>
+```
+
+**Endpoint**: `GET /api/v1/studies`
+
+**Response Format**:
+```json
+[
+  {
+    "id": "_prod_clean_easperger",
+    "title": "Asperger Syndrome Study",
+    "description": "Clinical data from patients diagnosed with Asperger syndrome",
+    "record_count": 1250,
+    "last_updated": "2023-05-15T10:30:00Z",
+    "metadata": {
+      "study_type": "Longitudinal",
+      "year_started": 2018,
+      "principal_investigator": "Dr. Jane Smith",
+      "patient_count": 1250
+    }
+  }
+]
+```
+
+#### 2. Fetch Single Database/Dataset
+
+```typescript
+fetchDatabase(datasetId: string): Promise<Database>
+```
+
+**Endpoint**: `GET /api/v1/studies` (filtered by ID)
+
+**Response Format**: Same as a single item from the databases list
+
+#### 3. Fetch Questionnaires for a Dataset
+
+```typescript
+fetchQuestionnaires(datasetId: string): Promise<any[]>
+```
+
+**Endpoint**: `GET /api/v1/studies/${datasetId}/tables`
+
+**Response Format**:
+```json
+[
+  {
+    "form": {
+      "nomFormulaire": "Patient Demographics",
+      "nomTable": "_prod_clean_easperger.demographics"
+    },
+    "fields": [
+      [
+        {
+          "description": "Patient ID",
+          "variable_name": "patient_id",
+          "data_type": "string",
+          "possible_answers": {}
+        },
+        {
+          "description": "Age at diagnosis",
+          "variable_name": "age_at_diagnosis",
+          "data_type": "integer",
+          "possible_answers": {}
+        }
+      ]
+    ]
+  }
+]
+```
+
+#### 4. Submit Extraction Request
+
+```typescript
+submitExtraction(request: ExtractionRequest): Promise<ExtractionResponse>
+```
+
+**Endpoint**: `POST /api/v1/extract`
+
+**Request Format**:
+```json
+{
+  "datasetId": "_prod_clean_easperger",
+  "selections": [
+    {
+      "questionnaireId": "demographics",
+      "variables": ["patient_id", "age_at_diagnosis", "gender"]
+    },
+    {
+      "questionnaireId": "clinical_assessment",
+      "variables": ["assessment_date", "severity_score"]
+    }
+  ]
+}
+```
+
+**Response Format**:
+```json
+{
+  "status": "success",
+  "message": "Data extraction completed successfully",
+  "request": { /* original request object */ },
+  "dataset": "_prod_clean_easperger",
+  "selections_count": 2,
+  "total_variables": 5
+}
+```
+
+### Data Types
+
+#### Database
+```typescript
+interface Database {
+  id: string;              // Unique identifier for the dataset
+  title: string;           // Human-readable title
+  description: string;     // Detailed description
+  record_count: number;    // Number of records in the dataset
+  last_updated: string;    // ISO date string of last update
+  metadata?: {            // Optional metadata
+    study_type?: string;   // Type of study (e.g., "Longitudinal")
+    year_started?: number; // Year the study started
+    principal_investigator?: string; // Lead researcher
+    patient_count?: number; // Number of patients in the study
+    [key: string]: any;    // Additional metadata fields
+  };
+}
+```
+
+#### Variable Selection
+```typescript
+interface VariableSelection {
+  questionnaireId: string; // ID of the questionnaire
+  variables: string[];     // Array of variable names to extract
+}
+```
+
+#### Extraction Request
+```typescript
+interface ExtractionRequest {
+  datasetId: string;                // ID of the dataset
+  selections: VariableSelection[];  // Array of selections
+}
+```
 
 ## Development
 
