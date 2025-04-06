@@ -6,10 +6,20 @@ import DatasetGrid from "./DatasetGrid";
 import { Separator } from "./ui/separator";
 import DataSelectionGuide from "./DataSelectionGuide";
 import CloudEnvironmentGrid from "./CloudEnvironmentGrid";
-import { Database, FileSpreadsheet, Server } from "lucide-react";
+import {
+  Database,
+  FileSpreadsheet,
+  Server,
+  ShieldAlert,
+  Users,
+} from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import RoleBasedAccess from "./auth/RoleBasedAccess";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 const PsychiatricDataWarehouse = () => {
   const [activeTab, setActiveTab] = useState("projects");
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -25,6 +35,15 @@ const PsychiatricDataWarehouse = () => {
               projects. Browse available projects, request access to specific
               datasets, or extract variables for your analysis.
             </p>
+            {user && (
+              <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <p className="text-sm text-blue-700">
+                  Welcome, <span className="font-medium">{user.name}</span>. You
+                  are logged in as a{" "}
+                  <span className="font-medium capitalize">{user.role}</span>.
+                </p>
+              </div>
+            )}
             <Separator className="mt-3 sm:mt-4" />
           </div>
 
@@ -57,19 +76,80 @@ const PsychiatricDataWarehouse = () => {
             </TabsContent>
 
             <TabsContent value="extraction" className="w-full">
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="md:w-1/5">
-                  <DataSelectionGuide currentStep={1} completedSteps={[]} />
+              <RoleBasedAccess
+                allowedRoles={["researcher", "manager", "admin"]}
+                fallback={
+                  <Alert className="mb-6">
+                    <ShieldAlert className="h-4 w-4" />
+                    <AlertTitle>Authentication Required</AlertTitle>
+                    <AlertDescription>
+                      You need to be logged in to access the data extraction
+                      features.
+                    </AlertDescription>
+                  </Alert>
+                }
+              >
+                <div className="flex flex-col md:flex-row gap-6">
+                  <div className="md:w-1/5">
+                    <DataSelectionGuide currentStep={1} completedSteps={[]} />
+                  </div>
+                  <div className="md:w-4/5">
+                    <DatasetGrid />
+                  </div>
                 </div>
-                <div className="md:w-4/5">
-                  <DatasetGrid />
-                </div>
-              </div>
+              </RoleBasedAccess>
             </TabsContent>
 
             <TabsContent value="cloud" className="w-full">
-              <CloudEnvironmentGrid />
+              <RoleBasedAccess
+                allowedRoles={["manager", "admin"]}
+                fallback={
+                  <Alert className="mb-6">
+                    <ShieldAlert className="h-4 w-4" />
+                    <AlertTitle>Access Restricted</AlertTitle>
+                    <AlertDescription>
+                      The cloud environment is only accessible to managers and
+                      administrators.
+                    </AlertDescription>
+                  </Alert>
+                }
+              >
+                <CloudEnvironmentGrid />
+              </RoleBasedAccess>
             </TabsContent>
+
+            <RoleBasedAccess allowedRoles={["admin"]}>
+              <div className="mt-8 p-6 border border-gray-200 rounded-lg bg-white shadow-sm">
+                <div className="flex items-center gap-2 mb-4">
+                  <Users className="h-5 w-5 text-blue-600" />
+                  <h2 className="text-xl font-bold">Admin Controls</h2>
+                </div>
+                <p className="text-gray-600 mb-4">
+                  This section is only visible to administrators. Here you can
+                  manage users, roles, and system settings.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="p-4 border rounded-md bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors">
+                    <h3 className="font-medium">User Management</h3>
+                    <p className="text-sm text-gray-500">
+                      Manage user accounts and permissions
+                    </p>
+                  </div>
+                  <div className="p-4 border rounded-md bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors">
+                    <h3 className="font-medium">System Settings</h3>
+                    <p className="text-sm text-gray-500">
+                      Configure system-wide settings
+                    </p>
+                  </div>
+                  <div className="p-4 border rounded-md bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors">
+                    <h3 className="font-medium">Audit Logs</h3>
+                    <p className="text-sm text-gray-500">
+                      View system activity and audit logs
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </RoleBasedAccess>
           </Tabs>
         </div>
       </main>
